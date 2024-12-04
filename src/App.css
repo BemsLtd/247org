@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.login {
+  background: url("../src/assets/Background/loginbg.jpg") no-repeat center center;
+  background-size: cover;
+  min-height: 100vh;
+  /* padding-top: 50px; */
+}
