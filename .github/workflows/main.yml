@@ -3,7 +3,7 @@ name: Deploy to cPanel
 on:
   push:
     branches:
-      - staging
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
