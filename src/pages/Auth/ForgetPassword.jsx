@@ -28,7 +28,7 @@ export default function ForgetPassword() {
        onSubmit: async (values) => {
          setMessage({ type: "", message: null });
          const url =
-           "https://stagingapi.247securityandforensic.com/api/auth/send-password-otp";
+           "https://orgserviceapi.247securityandforensic.com/api/auth/send-password-otp";
          try {
            await axios.post(url, values).then((response) => {
              const { success, message, token } = response.data;

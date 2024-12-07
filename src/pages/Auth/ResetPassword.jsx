@@ -43,7 +43,7 @@ export default function ResetPassword() {
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
       const url =
-        "https://stagingapi.247securityandforensic.com/api/user/reset-password";
+        "https://orgserviceapi.247securityandforensic.com/api/user/reset-password";
       try {
         const response = await axios.post(
           url,

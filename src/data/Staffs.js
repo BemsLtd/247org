@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query"
 import makeAPIRequest from ".";
 import { ENDPOINTS } from "./Endpoints";
 
-const useStaffs = ({company_id,branch_id}) => {
+const useStaffs = ({user_id,id}) => {
     return useQuery({
-      queryKey: ["Staffs", company_id, branch_id],
+      queryKey: ["Staffs", user_id, id],
       queryFn: async () => {
-        if(!company_id || !branch_id){
+        if(!user_id || !id){
           return 
         }
         const response = await makeAPIRequest.get(
-          `${ENDPOINTS.getemployee}?company_id=${company_id}&branch_id=${branch_id}`
+          `${ENDPOINTS.getemployee}?user_id=${user_id}&id=${id}`
         );
 
         if (!response.data) {
@@ -19,7 +19,7 @@ const useStaffs = ({company_id,branch_id}) => {
 
         return response.data;
       },
-      enabled: !!company_id,
+      enabled: !!user_id,
     });
 }
 

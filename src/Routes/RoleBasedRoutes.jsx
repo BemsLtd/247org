@@ -17,7 +17,7 @@ const RoleBasedRoutes = () => {
 
       <Route element={<Routeauth />}>
         {/* Admin route */}
-        <Route path="/super_admin/*" element={<AdminRoute />} />
+        <Route path="/admin/*" element={<AdminRoute />} />
 
         {/* Landlord route */}
         <Route path="/unit_admin/*" element={<UnitAdminRoutes />} />

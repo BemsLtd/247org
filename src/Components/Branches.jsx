@@ -30,17 +30,17 @@ import SelectCom from "./SelectCom";
 function Branch({ gridnum, pagination, id }) {
   const [page, setPage] = useState(1);
   const [message, setMessage] = useState({ status: "", message: null });
-  const { data: branch, isLoading, error } = useBranch({company_id: id});
+  const { data: branch, isLoading, error } = useBranch({user_id: id});
   const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
 
   const [openModal, setOpenModal] = useState(false);
   const [editBranch, setEditBranch] = useState(null);
   const [formValues, setFormValues] = useState({
     image: "",
-    company_id: "",
-    branch_id:"",
-    branch_name: "",
-    branch_address: "",
+    user_id: "",
+    id:"",
+    name: "",
+    address: "",
   });
 
   const handleChange = (event, value) => {
@@ -51,10 +51,10 @@ function Branch({ gridnum, pagination, id }) {
     console.log("h",Branch)
     setEditBranch(Branch);
     setFormValues({
-      branch_id: Branch.branch_id,
-      company_id: Branch.company_id,
-      branch_name: Branch.branch_name,
-      branch_address: Branch.branch_address,
+      id: Branch.id,
+      user_id: Branch.user_id,
+      name: Branch.name,
+      address: Branch.address,
     });
     setOpenModal(true);
   };
@@ -66,19 +66,19 @@ function Branch({ gridnum, pagination, id }) {
 
   const formik = useFormik({
     initialValues: {
-      company_id: formValues.company_id,
-      branch_id : formValues.branch_id,
-      branch_name: formValues.branch_name,
-      branch_address: formValues.branch_address,
+      user_id: formValues.user_id,
+      id : formValues.id,
+      name: formValues.name,
+      address: formValues.address,
       image: [],
     },
     onSubmit: async (values) => {
       console.log("valses",values)
       const formData = new FormData();
-      formData.append("company_id", values.company_id);
-      formData.append("branch_id", values.branch_id);
-      formData.append("branch_name", values.branch_name);
-      formData.append("branch_address", values.branch_address);
+      formData.append("user_id", values.user_id);
+      formData.append("id", values.id);
+      formData.append("name", values.name);
+      formData.append("address", values.address);
       values.image.forEach((file) => {
         formData.append(`image`, file);
       });
@@ -102,10 +102,10 @@ function Branch({ gridnum, pagination, id }) {
   );
 
   useEffect(() => {
-    formik.setFieldValue("company_id", formValues.company_id)
-    formik.setFieldValue("branch_id" , formValues.branch_id)  
-    formik.setFieldValue("branch_name", formValues.branch_name)  
-    formik.setFieldValue("branch_address", formValues.branch_address)                
+    formik.setFieldValue("user_id", formValues.user_id)
+    formik.setFieldValue("id" , formValues.id)  
+    formik.setFieldValue("name", formValues.name)  
+    formik.setFieldValue("address", formValues.address)                
   }, [formValues]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -124,7 +124,7 @@ function Branch({ gridnum, pagination, id }) {
     <Box>
       <Grid container spacing={2}>
         {error && <Typography color="error">{error.message}</Typography>}
-        {(isLoading ? Array.from(new Array(10)) : branch.subBranches || []).map(
+        {(isLoading ? Array.from(new Array(10)) : branch.data || []).map(
           (item, i) => (
             <Grid item xs={12} sm={gridnum} key={item?.id ?? `loading-${i}`}>
               {" "}
@@ -139,7 +139,7 @@ function Branch({ gridnum, pagination, id }) {
                       JSON.parse(item?.image).map((file, index) => (
                         <Paper key={index}>
                           <img
-                            src={`${BASE_URL}uploads/${file}`}
+                            src={`${BASE_URL}storage/${file}`}
                             alt={`preview-${index}`}
                             width="100%"
                             style={{
@@ -153,7 +153,7 @@ function Branch({ gridnum, pagination, id }) {
                     ) : (
                       <Paper>
                         <img
-                          src={`${BASE_URL}uploads/${item.image}`}
+                          src={`${BASE_URL}storage/${item.image}`}
                           alt={`preview-single`}
                           width="100%"
                           style={{
@@ -175,12 +175,12 @@ function Branch({ gridnum, pagination, id }) {
                   ) : (
                     <>
                       <Typography gutterBottom variant="h6" component="div">
-                        {item?.branch_name?.length > 30
-                          ? `${item.branch_name.substr(0, 25)}...`
-                          : item?.branch_name ?? "247 Building"}
+                        {item?.name?.length > 30
+                          ? `${item.name.substr(0, 25)}...`
+                          : item?.name ?? "247 Building"}
                       </Typography>
                       <Typography variant="body2" color="text.error">
-                        Address: {item?.branch_address ?? "Unknown"}
+                        Address: {item?.address ?? "Unknown"}
                       </Typography>
                       <Typography variant="body2" color="text.error">
                         Industry: {item?.industry ?? "Unknown"}
@@ -288,57 +288,59 @@ function Branch({ gridnum, pagination, id }) {
                   )}
                 </div>
                 <SelectCom
-                  id="company_id"
-                  name="company_id"
-                  value={formValues.company_id}
+                  id="user_id"
+                  name="user_id"
+                  value={formValues.user_id}
                   label="Select Company"
                   options={
                     companyLoading
                       ? [{ value: "", text: "Loading companies..." }]
-                      : companyError ||
-                        (companies.companies &&
-                          companies.companies.length === 0)
-                      ? [{ value: "", text: "No companies available" }]
-                      : companies.companies.map((item) => ({
-                          value: String(item.id),
-                          text: item.company_name,
-                        }))
+                      : companies.data?.length
+        ? companies.data.map((item) => ({
+            value: String(item.id),
+            text: item.org_name,
+          }))
+        : [{ value: "", text: "No companies available" }]
+      
+      
+      
+      
                   }
                   onBlur={formik.handleBlur}
                   onChange={(e) =>
                     setFormValues({
                       ...formValues,
-                      company_name: e.target.value,
+                      org_name: e.target.value,
                     })
                   }
-                  error={formik.touched.company_id && formik.errors.company_id}
+                  error={formik.touched.user_id && formik.errors.user_id}
                   helperText={
-                    formik.touched.company_id && formik.errors.company_id
-                      ? formik.errors.company_id
+                    formik.touched.user_id && formik.errors.user_id
+                      ? formik.errors.user_id
                       : null
                   }
                 />
                 <InputCom
-                  id="branch_name"
+                  id="name"
                   label="branch Name"
                   type="text"
-                  value={formValues.branch_name}
+                  value={formValues.name}
                   onChange={(e) => setFormValues({
                       ...formValues,
-                      branch_name: e.target.value,
+                      name: e.target.value,
                     })
                   }
                 />
 
                 <InputCom
-                  id="branch_address"
+                  id="address"
                   label="branch Address"
                   type="text"
-                  value={formValues.branch_address}
+                  value={formValues.address}
                   onChange={(e) =>
                     setFormValues({
                       ...formValues,
-                      branch_address: e.target.value,
+                      address: e.target.value,
                     })
                   }
                 />
@@ -357,6 +359,8 @@ function Branch({ gridnum, pagination, id }) {
               </Button>
             </CardActions>
           </Card>
+{          console.log('this is the branch', branch)}
+
         </ModalBox>
       )}
     </Box>

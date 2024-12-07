@@ -10,7 +10,6 @@ import { useCallback,  useState } from "react";
 import Notice from "../Notice"
 import SelectCom from "../SelectCom";
 import { useDropzone } from "react-dropzone";
-import useProperties from "../../data/Properties";
 
 function Addunit({ open, handleClose }) {
   const { data: properties, isLoading, error } = useProperties();

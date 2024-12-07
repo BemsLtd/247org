@@ -7,10 +7,12 @@ import Ceoside from "./unitadminside";
 
 
 export default function Aside({ setAside }) {
-  const userRole = useSelector((state) => state.userDetails.user?.role);
+  const userRole = useSelector((state) => state.userDetails.user.user?.role);
+  console.log(userRole);
+  
   return (
     <>
-      {userRole === "super_admin" ? (
+      {userRole === "admin" ? (
         <Adminside setAside={setAside} />
       ) : userRole === "branch_admin" ? (
         <Landlordside setAside={setAside} />

@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import useProperties from "../data/Properties";
 import { Edit, Save, Visibility } from "@mui/icons-material";
 import ModalBox from "./Modal";
 import { useState } from "react";

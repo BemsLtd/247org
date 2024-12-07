@@ -2,13 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import makeAPIRequest from ".";
 import { ENDPOINTS } from "./Endpoints";
 
-const useBranch = ({ company_id = null } = {}) => {
+const useBranch = ({ id = null } = {}) => {
   return useQuery({
-    queryKey: ["branch", company_id],
+    queryKey: ["branch", id],
     queryFn: async () => {
-      const endpoint = company_id
-        ? `${ENDPOINTS.branches}?company_id=${company_id}`
-        : ENDPOINTS.allbranch;
+      const endpoint =  ENDPOINTS.allbranch;
 
       const response = await makeAPIRequest.get(endpoint);
 
@@ -18,7 +16,7 @@ const useBranch = ({ company_id = null } = {}) => {
 
       return response.data;
     },
-    enabled: company_id !== undefined, 
+    enabled: id !== undefined, 
   });
 };
 

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 export default function Adminside({setAside}) {
-const userRole = useSelector((state) => state.userDetails.user?.role);
+const userRole = useSelector((state) => state.userDetails.user.user?.role);
     const settingsSubMenu = [
       { link: "/settings/general", name: "General", icon: <Build /> },
       { link: "/settings/advanced", name: "Advanced", icon: <Tune /> },

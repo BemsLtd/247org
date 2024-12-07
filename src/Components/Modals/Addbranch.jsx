@@ -16,7 +16,7 @@ function Addbranch({ open, handleClose }) {
   const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
 
   const validationSchema = Yup.object().shape({
-    company_id: Yup.number().required("Select a company"),
+   user_id: Yup.number().required("Select a company"),
     image: Yup.mixed()
       .required("Image is required")
       .test("fileType", "Unsupported File Format", (value) => {
@@ -24,8 +24,8 @@ function Addbranch({ open, handleClose }) {
           value && ["image/jpeg", "image/jpg", "image/png"].includes(value.type)
         );
       }),
-    branch_name: Yup.string().required("branch name is required"),
-    branch_address: Yup.string().required("branch address is required"),
+    name: Yup.string().required("branch name is required"),
+    address: Yup.string().required("branch address is required"),
     
   });
 
@@ -33,22 +33,22 @@ function Addbranch({ open, handleClose }) {
   const formik = useFormik({
     initialValues: {
       image: null,
-      company_id: "",
-      branch_name: "",
-      branch_address: "",
+      user_id: "",
+      name: "",
+      address: "",
     },
     validationSchema,
     onSubmit: async (values) => {
         const formData = new FormData();
-        formData.append("company_id", values.company_id);
-      formData.append("branch_name", values.branch_name);
-      formData.append("branch_address", values.branch_address);
+        formData.append("user_id", values.user_id);
+      formData.append("name", values.name);
+      formData.append("address", values.address);
       formData.append("image", values.image);
 
       setMessage({ type: "", message: null });
 
       await makeAPIRequest
-        .post(ENDPOINTS.addbranch, values, {
+        .post(ENDPOINTS.addbranches, values, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -90,65 +90,66 @@ function Addbranch({ open, handleClose }) {
         />
 
         <SelectCom
-          id="company_id"
-          name="company_id"
-          value={formik.values.company_id}
+          id="user_id"
+          name="user_id"
+          value={formik.values.user_id}
           label="Select Company"
           options={
             companyLoading
               ? [{ value: "", text: "Loading companies..." }]
               : companyError ||
-                (companies.companies && companies.companies.length === 0)
+                (companies.data && companies.data.length === 0)
               ? [{ value: "", text: "No companies available" }]
-              : companies.companies.map((item) => ({
+              
+              : companies.data.map((item) => ({
                   value: String(item.id),
-                  text: item.company_name,
+                  text: item.org_name,
                 }))
           }
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
-          error={formik.touched.company_id && formik.errors.company_id}
+          error={formik.touched.user_id && formik.errors.id}
           helperText={
-            formik.touched.company_id && formik.errors.company_id
-              ? formik.errors.company_id
+            formik.touched.user_id && formik.errors.user_id
+              ? formik.errors.user_id
               : null
           }
         />
 
         <InputCom
-          id="branch_name"
+          id="name"
           label="branch Name"
-          value={formik.values.branch_name}
+          value={formik.values.name}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           type="text"
           error={
-            formik.touched.branch_name && formik.errors.branch_name
+            formik.touched.name && formik.errors.name
               ? true
               : false
           }
           helperText={
-            formik.touched.branch_name && formik.errors.branch_name
-              ? formik.errors.branch_name
+            formik.touched.name && formik.errors.name
+              ? formik.errors.name
               : null
           }
         />
 
         <InputCom
-          id="branch_address"
+          id="address"
           label="Address"
-          value={formik.values.branch_address}
+          value={formik.values.address}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           type="text"
           error={
-            formik.touched.branch_address && formik.errors.branch_address
+            formik.touched.address && formik.errors.address
               ? true
               : false
           }
           helperText={
-            formik.touched.branch_address && formik.errors.branch_address
-              ? formik.errors.branch_address
+            formik.touched.address && formik.errors.address
+              ? formik.errors.address
               : null
           }
         />

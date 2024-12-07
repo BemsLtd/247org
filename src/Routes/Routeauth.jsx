@@ -41,10 +41,12 @@ const Routeauth = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       const token = localStorage.getItem("247_token");
+console.log("Token:", token);
+
 
       try {
         const response = await axios.get(
-          `https://stagingapi.247securityandforensic.com/api/${ENDPOINTS.profile}`,
+          `https://orgserviceapi.247securityandforensic.com/api/${ENDPOINTS.profile}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,9 +57,10 @@ const Routeauth = () => {
           }
         );
         const { data } = response.data;
-        dispatch(updateUserDetails({ user: data }));
+        dispatch(updateUserDetails({ user: data.profile }));
+        
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        console.error("Error fetching user profile:", error.response);
 
         navigate("/auth/login", {
           state: { messager: error.response.data.message },

@@ -9,7 +9,6 @@ import makeAPIRequest from "../../data";
 import { ENDPOINTS } from "../../data/Endpoints";
 import SelectCom from "../SelectCom";
 import { Button, CircularProgress, Stack } from "@mui/material";
-import useProperties from "../../data/Properties";
 import useUnits from "../../data/Units";
 
 

@@ -14,7 +14,7 @@ import AuthLayout from "./AuthLayout";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import makeAPIRequest from "../../data";
-import { ENDPOINTS, TOKEN_KEY } from "../../data/Endpoints";
+import { ENDPOINTS, TOKEN_KEY, TOKEN_KEY2 } from "../../data/Endpoints";
 import { useDispatch } from "react-redux";
 import  { updateUserDetails } from "../../store/userinfo";
 
@@ -25,7 +25,7 @@ export default function Login() {
   const [message, setMessage] = useState({ type: "", message: null });
 
   const validationSchema = Yup.object({
-    email_or_phone: Yup.string().required("Enter atleast a phone or email address"),
+    login: Yup.string().required("Enter atleast a phone or email address"),
     password: Yup.string() .min(8, "Password must be at least 8 characters") .required("Required"),
   });
   const location = useLocation();
@@ -46,36 +46,38 @@ export default function Login() {
 
   const formik = useFormik({
     initialValues: {
-      email_or_phone: "",
+      login: "",
       password: "",
     },
     validationSchema,
     onSubmit: async (values) => {
-      setMessage({ type: "", message: null });
-      try {
-        await makeAPIRequest.post(ENDPOINTS.login, values).then((res) => {
-        const { data, success, message } = res.data;
-        if (success) {
-          console.log(data.user.others);
-          setMessage({ type: "success", message: message });
-          localStorage.setItem(TOKEN_KEY, data.authToken);
-          dispatch(updateUserDetails({ user: data.user.others }));
-          setTimeout(() => {
-            navigate(`/${data.user.role}`, {
-              replace: true,
-            });
-          }, 2000);
-        } else {
-          console.log(message);
-          setMessage({ type: "error", message: message });
-        }
-      });
-      } catch (error) {
-        console.log(error);
-        setMessage({ type: "error", message: error.message });
-      }
+  setMessage({ type: "", message: null });
+  try {
+    const res = await makeAPIRequest.post(ENDPOINTS.login, values);
+    console.log("Full API Response:", res.data);
+
+    const { user, token, second_token, message, status } = res.data;
+
+    if (status && user) {
+      console.log("User data:", user);
+
+      setMessage({ type: "success", message: message });
+      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(TOKEN_KEY2, second_token);
+      console.log('this is token 2', second_token);
       
-    },
+      dispatch(updateUserDetails({ user })); // Save user details in the store
+      navigate(`/${user.role}`, { replace: true }); // Redirect based on role
+    } else {
+      console.error("API returned error:", message);
+      setMessage({ type: "error", message: message || "Login failed." });
+    }
+  } catch (error) {
+    console.error("Request error:", error);
+    setMessage({ type: "error", message: error.message || "An error occurred." });
+  }
+}
+
   });
   return (
     <AuthLayout>
@@ -127,19 +129,19 @@ export default function Login() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <InputCom
-                  id="email_or_phone"
+                  id="login"
                   label="Username or Email"
                   type="text"
-                  value={formik.values.email_or_phone}
+                  value={formik.values.login}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   endAdornmentIcon={<Person />}
                   error={
-                    formik.touched.email_or_phone && formik.errors.email_or_phone ? true : false
+                    formik.touched.login && formik.errors.login ? true : false
                   }
                   helperText={
-                    formik.touched.email_or_phone && formik.errors.email_or_phone
-                      ? formik.errors.email_or_phone
+                    formik.touched.login && formik.errors.login
+                      ? formik.errors.login
                       : null
                   }
                 />

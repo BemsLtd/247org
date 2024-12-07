@@ -13,7 +13,6 @@ import {
 import { Add, Home, Search } from "@mui/icons-material";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import useProperties from "../data/Properties";
 import Addunit from "../Components/Modals/AddUnits";
 import Units from "../Components/Units";
 

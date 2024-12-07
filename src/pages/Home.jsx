@@ -3,7 +3,6 @@ import Stats from "../Components/Stats";
 import {  ContactPhoneRounded, LocalParkingRounded, LocalTaxiRounded, PersonSearchRounded, ReportRounded, Settings } from "@mui/icons-material";
 // import { DataGrid } from '@mui/x-data-grid';
 import { useEffect, useState } from "react";
-import Properties from "../Components/Properties";
 import { BarChart, PieChart } from "@mui/x-charts";
 import ad from "../assets/ad.jpg"
 import {Link, Link as RouterLink } from "react-router-dom";
@@ -105,7 +104,7 @@ console.log(user);
       </Box>
       <Box>
         <Typography>Recent activities</Typography>
-        <Grid container spacing={2}>
+        {/* <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Properties gridnum={6} />
             <Box
@@ -159,7 +158,7 @@ console.log(user);
               />
             </Box>
           </Grid>
-        </Grid>
+        </Grid> */}
       </Box>
     </Box>
   );

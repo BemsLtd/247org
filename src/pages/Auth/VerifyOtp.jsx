@@ -34,7 +34,7 @@ console.log(state);
   const Validate = async(value) => {
     const token = localStorage.getItem('247_token');
     const url =
-      "https://stagingapi.247securityandforensic.com/api/auth/verify-otp";
+      "https://orgserviceapi.247securityandforensic.com/api/auth/verify-otp";
     await axios
       .post(
         url,

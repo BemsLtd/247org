@@ -8,7 +8,7 @@ import Editstaffs from "./Modals/Editstaffs";
 import PropTypes from "prop-types";
 
 function Staffs({companydetails}) {
-  const { data: Staffs, isLoading, error } = useStaffs({company_id:companydetails.company_id, branch_id: companydetails.branch_id});
+  const { data: Staffs, isLoading, error } = useStaffs({user_id:companydetails.user_id, id: companydetails.id});
   const [edit, setEdit] = useState(null);
   const [open, setOpen] = useState(true);
   const [message, setMessage] = useState({ status: "success", message: "this is an alert" });

@@ -21,16 +21,16 @@ import Addstaff from "../../Components/Modals/AddStaffs"
 
 export default function Managestaffs() {
   const [openModal, setOpenModal] = useState(false);
-  const [companydetail, setCompanydetail] = useState({company_id: null, branch_id: null});
+  const [companydetail, setCompanydetail] = useState({user_id: null, id: null});
   const { data: companies, isLoading: companiesLoading, error: companiesError} = useCompany();
-  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({ company_id: companydetail.company_id });
+  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({ user_id: companydetail.user_id });
 
   const handleAddSTaffs = (value) => {
     setOpenModal(value);
   };
 
   const renderUnits = () => {
-    if (!companydetail.company_id && !companydetail.branch_id) {
+    if (!companydetail.user_id && !companydetail.id) {
       return (
         <Typography>Select a company and branch to view staffs</Typography>
       );
@@ -94,20 +94,20 @@ export default function Managestaffs() {
             )}
 
             <Grid container gap={2}>
-              {companies?.companies.length > 0
-                ? companies.companies.map((company) => (
+              {companies?.data.length > 0
+                ? companies.data.map((company) => (
                     <Chip
                       key={company.id}
-                      label={company.company_name}
+                      label={company.org_name}
                       icon={<Business />}
                       onClick={() =>
                         setCompanydetail({
                           ...companydetail,
-                          company_id: company.id,
+                          user_id: company.id,
                         })
                       }
                       color={
-                        companydetail.company_id === company.id
+                        companydetail.user_id === company.id
                           ? "primary"
                           : "default"
                       }
@@ -134,20 +134,20 @@ export default function Managestaffs() {
             )}
 
             <Grid container gap={2}>
-              {branch?.subBranches.length > 0
-                ? branch.subBranches.map((branches) => (
+              {branch?.data.length > 0
+                ? branch.data.map((branches) => (
                     <Chip
                       key={branches.id}
-                      label={branches.branch_name}
+                      label={branches.name}
                       icon={<Business />}
                       onClick={() =>
                         setCompanydetail({
                           ...companydetail,
-                          branch_id: branches.id,
+                          id: branches.id,
                         })
                       }
                       color={
-                        companydetail.branch_id === branches.id
+                        companydetail.id === branches.id
                           ? "primary"
                           : "default"
                       }

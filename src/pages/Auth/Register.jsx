@@ -1,102 +1,130 @@
-import { Alert, Box, Button, Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@mui/material";
 import AuthLayout from "./AuthLayout";
 import Logo from "/logo.png";
 import InputCom from "../../Components/InputCom";
-import {Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import SelectCom from "../../Components/SelectCom";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
- import * as Yup from "yup";
-import {  TOKEN_KEY } from "../../data/Endpoints";
+import * as Yup from "yup";
 import axios from "axios";
-
 
 export default function Register() {
   const navigate = useNavigate();
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", message: null });
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState({ type: "", message: null });
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-     const handleMouseDownPassword = (event) => {
-       event.preventDefault();
-     };
+  // Validation schema
+  const validationSchema = Yup.object({
+    org_name: Yup.string().required("Organization name is required."),
+    org_email: Yup.string()
+      .email("Invalid email address")
+      .required("Organization email is required."),
+    avatar: Yup.mixed()
+      .required("avatar is required"),
+      
+      
+    org_phone: Yup.string().required("Organization phone number is required."),
+    address: Yup.string().required("Organization address is required."),
+    role: Yup.string()
+      .oneOf(["admin", "user", "landlord"], "Invalid Role")
+      .required("Role is required."),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required."),
+    industry: Yup.string().required("Industry is required."),
+  });
 
-     const validationSchema = Yup.object({
-       first_name: Yup.string()
-         .max(15, "Must be 15 characters or less")
-         .required("Required"),
-       middle_name: Yup.string(),
-       last_name: Yup.string()
-         .max(20, "Must be 20 characters or less")
-         .required("Required"),
-       email: Yup.string().email("Invalid email address").required("Required"),
-       phone: Yup.string().required("Required"),
-       password: Yup.string()
-         .min(8, "Password must be at least 8 characters")
-         .required("Required"),
-       role: Yup.string()
-         .oneOf(["CEO", "admin", "user","landlord"], "Invalid Role")
-         .required("Required"),
-     });
+  // Formik setup
+  const formik = useFormik({
+    initialValues: {
+      org_name: "",
+      org_email: "",
+      org_phone: "",
+      address: "",
+      role: "",
+      password: "",
+      industry: "",
+      avatar: null,
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setLoading(true);
+      setProgress(0);
 
-     const formik = useFormik({
-       initialValues: {
-         first_name: "",
-         middle_name: "",
-         last_name: "",
-         email: "",
-         phone: "",
-         password: "",
-         role: "",
-       },
-       validationSchema,
-       onSubmit: async (values) => {
-         setLoading(true);
-         setProgress(0);
-         const interval = setInterval(() => {
-           setProgress((prev) => {
-             if (prev >= 100) {
-               clearInterval(interval);
-               return 100;
-             }
-             return prev + 10;
-           });
-         }, 200);
-         const url =
-           "https://stagingapi.247securityandforensic.com/api/user/register";
-         try {
-           await axios.post(url, values).then((response) => {
-             // Access response data
-             const { success, message, token } = response.data;
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
 
-             if (success) {
+      const url =
+        "https://orgserviceapi.247securityandforensic.com/api/auth/register";
+        const formData = new FormData();
 
-               setMessage({ type: "success", message:message });
+  // Append all form fields to FormData
+  for (const key in values) {
+    if (key === "avatar" && values[key]) {
+      // Handle file field
+      formData.append(key, values[key]);
+    } else {
+      formData.append(key, values[key]);
+    }
+  }
 
-               localStorage.setItem(TOKEN_KEY, token);
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    
+        const { success, message, token } = response.data;
 
-               navigate("/auth/verify-otp", {
-                 replace: true,
-                 state: { user_id: token }, 
-               });
-             } else {
-               setMessage({ type: "error", message : message});
-             }
-           });
-         } catch (error) {
-           console.error("Error submitting form:", error);
-           setMessage({ type: "error", message: error.response.data.message });
-         } finally {
-           setLoading(false);
-           setProgress(100);
-         }
-       },
-     });
+        if (success) {
+          setMessage({ type: "success", message });
+          localStorage.setItem("TOKEN_KEY", token);
+          navigate("/auth/verify-otp", {
+            replace: true,
+            state: { user_id: token },
+          });
+        } else {
+          setMessage({ type: "error", message });
+        }
+      } catch (error) {
+        setMessage({
+          type: "error",
+          message: error.response?.data?.message || "Something went wrong!",
+        });
+      } finally {
+        setLoading(false);
+        setProgress(100);
+      }
+    },
+  });
+
   return (
     <AuthLayout>
       <Card
@@ -106,7 +134,7 @@ export default function Register() {
           padding: 2,
         }}
       >
-        {message && (
+        {message.message && (
           <Alert variant="filled" severity={message.type}>
             {message.message}
           </Alert>
@@ -122,198 +150,168 @@ export default function Register() {
           >
             <img
               src={Logo}
-              srcSet={Logo}
               alt="Logo"
               style={{
-                width: 70, // Adjust size as needed
-                height: 70, // Adjust size as needed
-                borderRadius: "50%", // Make the logo rounded
-                objectFit: "cover", // Ensure the logo covers the circle
+                width: 70,
+                height: 70,
+                borderRadius: "50%",
+                objectFit: "cover",
                 marginBottom: 2,
               }}
               loading="lazy"
             />
-            <Typography
-              sx={{ fontSize: 24, marginBottom: 1 }}
-              variant="h5"
-              color="text.primary"
-              align="center"
-            >
+            <Typography variant="h5" color="text.primary" align="center">
               Sign Up
             </Typography>
-            <Typography
-              sx={{ fontSize: 14, marginBottom: 2 }}
-              align="center"
-              color="text.secondary"
-            >
+            <Typography variant="body2" align="center" color="text.secondary">
               Please provide accurate information.
             </Typography>
           </Box>
-          <Grid container spacing={2} columns={{ xs: 1, md: 12 }}>
-            <Grid item xs={1} md={6}>
-              <SelectCom
-                id="role"
-                name="role"
-                value={formik.values.role}
-                label="Sign up as"
-                options={[
-                  { value: "CEO", text: "Business Owner" },
-                  { value: "admin", text: "Admin" },
-                  { value: "landlord", text: "Landlord" },
-                  { value: "user", text: "User" },
-                  { value: "medical", text: "Medical" },
-                ]}
-                onChange={formik.handleChange}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <InputCom
+                id="org_name"
+                label="Organization Name"
+                value={formik.values.org_name}
                 onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.org_name && formik.errors.org_name ? true : false
+                }
+                helperText={formik.touched.org_name && formik.errors.org_name}
               />
             </Grid>
-            <Grid item xs={1} md={6}>
+            <Grid item xs={12} sm={6}>
               <InputCom
-                id="email"
-                label="Email Address*"
-                value={formik.values.email}
+                id="org_email"
+                label="Organization Email"
+                value={formik.values.org_email}
                 onBlur={formik.handleBlur}
                 type="email"
                 onChange={formik.handleChange}
                 error={
-                  formik.touched.email && formik.errors.email ? true : false
-                }
-                helperText={
-                  formik.touched.email && formik.errors.email
-                    ? formik.errors.email
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item xs={1} md={6}>
-              <InputCom
-                id="first_name"
-                label="First Name"
-                type="text"
-                value={formik.values.first_name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.first_name && formik.errors.first_name
+                  formik.touched.org_email && formik.errors.org_email
                     ? true
                     : false
                 }
-                helperText={
-                  formik.touched.first_name && formik.errors.first_name
-                    ? formik.errors.first_name
-                    : null
-                }
+                helperText={formik.touched.org_email && formik.errors.org_email}
               />
             </Grid>
-            <Grid item xs={1} md={6}>
+            <Grid item xs={12} sm={6}>
               <InputCom
-                id="middle_name"
-                label="Middle Name"
-                type="text"
-                value={formik.values.middle_name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.middle_name && formik.errors.middle_name
-                    ? true
-                    : false
-                }
-                helperText={
-                  formik.touched.middle_name && formik.errors.middle_name
-                    ? formik.errors.middle_name
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item xs={1} md={6}>
-              <InputCom
-                id="last_name"
-                label="Last Name"
-                type="text"
-                onBlur={formik.handleBlur}
-                value={formik.values.last_name}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.last_name && formik.errors.last_name
-                    ? true
-                    : false
-                }
-                helperText={
-                  formik.touched.last_name && formik.errors.last_name
-                    ? formik.errors.last_name
-                    : null
-                }
-              />
-            </Grid>
-            <Grid item xs={1} md={6}>
-              <InputCom
-                id="phone"
+                id="org_phone"
                 label="Phone Number"
-                type="text"
+                value={formik.values.org_phone}
                 onBlur={formik.handleBlur}
-                value={formik.values.phone}
+                type="text"
                 onChange={formik.handleChange}
                 error={
-                  formik.touched.phone && formik.errors.phone
+                  formik.touched.org_phone && formik.errors.org_phone
                     ? true
                     : false
                 }
-                helperText={
-                  formik.touched.phone && formik.errors.phone
-                    ? formik.errors.phone
-                    : null
-                }
+                helperText={formik.touched.org_phone && formik.errors.org_phone}
               />
             </Grid>
-            <Grid item xs={1} md={6}>
+            <Grid item xs={12} sm={6}>
+              <InputCom
+                id="address"
+                label="Address"
+                value={formik.values.address}
+                onBlur={formik.handleBlur}
+                type="text"
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.address && formik.errors.address
+                    ? true
+                    : false
+                }
+                helperText={formik.touched.address && formik.errors.address}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <SelectCom
+                id="role"
+                name="role"
+                value={formik.values.role}
+                label="Role"
+                options={[
+                  { value: "admin", text: "Admin" },
+                  { value: "landlord", text: "Landlord" },
+                  { value: "user", text: "User" },
+                ]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.role && formik.errors.role ? true : false}
+                helperText={formik.touched.role && formik.errors.role}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <InputCom
                 id="password"
                 label="Password"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
                 type={showPassword ? "text" : "password"}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.password && formik.errors.password
+                    ? true
+                    : false
+                }
+                helperText={formik.touched.password && formik.errors.password}
                 endAdornmentIcon={
                   showPassword ? <VisibilityOff /> : <Visibility />
                 }
                 handleClickShowPassword={handleClickShowPassword}
                 handleMouseDownPassword={handleMouseDownPassword}
-                value={formik.values.password}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputCom
+                id="industry"
+                label="Industry"
+                value={formik.values.industry}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
                 error={
-                  formik.touched.password && formik.errors.password
+                  formik.touched.industry && formik.errors.industry
                     ? true
                     : false
                 }
-                helperText={
-                  formik.touched.password && formik.errors.password
-                    ? formik.errors.password
-                    : null
-                }
+                helperText={formik.touched.industry && formik.errors.industry}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+            <InputCom
+  id="avatar"
+  name="avatar"
+  label="Image"
+  onBlur={formik.handleBlur}
+  onChange={(event) => {
+    formik.setFieldValue("avatar", event.currentTarget.files[0]);
+  }}
+  type="file"
+  error={formik.touched.avatar && !!formik.errors.avatar}
+  helperText={
+    formik.touched.avatar && formik.errors.avatar
+      ? formik.errors.avatar
+      : null
+  }
+/>
+
             </Grid>
           </Grid>
         </CardContent>
         <CardActions
           sx={{
             justifyContent: "center",
-            display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "95%",
-              mb: 2,
-            }}
-          >
-            <Link to="/auth/login" variant="body2" sx={{ marginLeft: 10 }}>
-              {"Login"}
-            </Link>
-            {/* <Link to="/auth/forget-password" variant="body2">
-              {"Forget Password?"}
-            </Link> */}
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+            <Link to="/auth/login">{"Login"}</Link>
           </Box>
           <Button
             type="submit"
@@ -322,11 +320,7 @@ export default function Register() {
             onClick={formik.handleSubmit}
           >
             {loading ? (
-              <CircularProgress
-                variant="determinate"
-                value={progress}
-                size={24}
-              />
+              <CircularProgress variant="determinate" value={progress} size={24} />
             ) : (
               "Register"
             )}

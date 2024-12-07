@@ -3,6 +3,7 @@ import { Button, CircularProgress,  Stack,} from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
+import makeAPIRequest2 from "../../data";
 import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -19,8 +20,8 @@ function Addstaff({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
   
   const validationSchema = Yup.object({
-      company_id: Yup.number().required("Company ID is required"),
-      branch_id: Yup.string().nullable(), 
+      user_id: Yup.number().required("Company ID is required"),
+      id: Yup.string().nullable(), 
       employee_email: Yup.string().email("Must be a valid email").required("Email is required"),
       job_role: Yup.string().required("Job role is required"),
       job_description: Yup.string().required("Job description is required"),
@@ -41,8 +42,8 @@ function Addstaff({ open, handleClose }) {
 
   const formik = useFormik({
     initialValues: {
-      company_id: "",
-      branch_id: "",
+      user_id: "",
+      id: "",
       employee_email: "",
       job_role: "",
       job_description: "",
@@ -61,8 +62,8 @@ function Addstaff({ open, handleClose }) {
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
       const employee = {
-        company_id: values.company_id,
-        branch_id: values.branch_id,
+        user_id: values.user_id,
+        id: values.id,
         employee_email: values.employee_email,
         job_role: values.job_role,
         job_description: values.job_description,
@@ -83,7 +84,7 @@ function Addstaff({ open, handleClose }) {
           );
         }
 
-        const res = await makeAPIRequest.post(ENDPOINTS.addemployee, employee);
+        const res = await makeAPIRequest.post(ENDPOINTS.addstaff, employee);
         const { success, message } = res.data;
 
         if (success) {
@@ -108,7 +109,7 @@ function Addstaff({ open, handleClose }) {
       const user = async () => {
         try {
           setLoading(true);
-          const response = await makeAPIRequest.post(ENDPOINTS.verifyUser, {
+          const response = await makeAPIRequest2.post(ENDPOINTS.verifyUser, {
             email: formik.values.employee_email,
           });
           const { success } = response.data;
@@ -153,7 +154,7 @@ function Addstaff({ open, handleClose }) {
       }
     };
 
-  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({company_id: formik.values.company_id});
+  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({user_id: formik.values.user_id});
 
 
   return (
@@ -168,56 +169,56 @@ function Addstaff({ open, handleClose }) {
       <h2>Add New Staff</h2>
       <form onSubmit={formik.handleSubmit}>
         <Stack spacing={2}>
-          {/* company_id Select Component */}
+          {/* user_id Select Component */}
           <SelectCom
-            id="company_id"
-            name="company_id"
-            value={formik.values.company_id}
+            id="user_id"
+            name="user_id"
+            value={formik.values.user_id}
             label="Select Company"
             options={
               companyLoading
                 ? [{ value: "", text: "Loading companies..." }]
                 : companyError ||
-                  (companies.companies && companies.companies.length === 0)
+                  (companies.data && companies.data.length === 0)
                 ? [{ value: "", text: "No companies available" }]
-                : companies.companies.map((item) => ({
+                : companies.data.map((item) => ({
                     value: item.id,
-                    text: item.company_name,
+                    text: item.org_name,
                   }))
             }
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
-            error={formik.touched.company_id && formik.errors.company_id}
+            error={formik.touched.user_id && formik.errors.user_id}
             helperText={
-              formik.touched.company_id && formik.errors.company_id
-                ? formik.errors.company_id
+              formik.touched.user_id && formik.errors.user_id
+                ? formik.errors.user_id
                 : null
             }
           />
-          {/* branch_id Select Component */}
+          {/* id Select Component */}
           <SelectCom
-            id="branch_id"
-            name="branch_id"
-            value={formik.values.branch_id}
+            id="id"
+            name="id"
+            value={formik.values.id}
             label={branchLoading ? "Loading Branches" : "Select Branch"}
             options={
               branchLoading
                 ? [{ value: "", text: "Loading branches..." }]
                 : branchError
                 ? [{ value: "", text: "Error loading branches" }]
-                : branch && branch.subBranches.length > 0
-                ? branch.subBranches.map((item) => ({
+                : branch && branch.data.length > 0
+                ? branch.data.map((item) => ({
                     value: item.id,
-                    text: item.branch_name,
+                    text: item.name,
                   }))
                 : [{ value: "", text: "No Branches Available" }]
             }
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
-            error={formik.touched.branch_id && formik.errors.branch_id}
+            error={formik.touched.id && formik.errors.id}
             helperText={
-              formik.touched.branch_id && formik.errors.branch_id
-                ? formik.errors.branch_id
+              formik.touched.id && formik.errors.id
+                ? formik.errors.id
                 : null
             }
           />

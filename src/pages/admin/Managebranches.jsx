@@ -52,21 +52,26 @@ function Managebranches() {
           marginTop: "10px",
         }}
       >
+
+        
         <Box sx={{ width: "300px", paddingBottom: "10px" }}>
           <SelectCom
-            id="company_id"
-            name="company_id"
+            id="user_id"
+            name="user_id"
             label="Select Company"
             options={
               companyLoading
                 ? [{ value: "", text: "Loading companies..." }]
-                : companyError ||
-                  (companies.companies && companies.companies.length === 0)
-                ? [{ value: "", text: "No companies available" }]
-                : companies.companies.map((item) => ({
-                    value: String(item.id),
-                    text: item.company_name,
-                  }))
+                : companies.data?.length
+  ? companies.data.map((item) => ({
+      value: String(item.id),
+      text: item.org_name,
+    }))
+  : [{ value: "", text: "No companies available" }]
+
+
+
+
             }
             onBlur={""}
             onChange={(e) => setCompany(e.target.value)}
@@ -87,6 +92,8 @@ function Managebranches() {
       <Grid container>
         <Grid item xs={12} md={12}>
           <Branch limit={9} gridnum={4} pagination={true} id={company} />
+    {console.log('company', company)}
+          
         </Grid>
       </Grid>
       {/* modal for adding properties */}

@@ -1,16 +1,20 @@
 export const TOKEN_KEY = "247_token";
+export const TOKEN_KEY2 = "247_token_user";
 
 export const BASE_URL =
-  import.meta.env.VITE_API_BASE || "https://stagingapi.247securityandforensic.com/api/";
+import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.com/api/";
   // import.meta.env.VITE_API_BASE || "http://localhost:5000/api/";
 
+  export const BASE_URL2 =
+  import.meta.env.VITE_API_BASE || "https://stagingapi.247securityandforensic.com/api/";
+
   export const ENDPOINTS = {
-    register: "user/register",
-    login: "user/login",
+    register: "auth/register",
+    login: "auth/login",
     forgetpassword: "auth/send-password-otp",
     resetpassword: "user/reset-password",
-    profile: "user/user-profile",
-    updateprofile: "user/update-profile",
+    profile: "profile",
+    updateprofile: "profile",
     verifyOtp: "auth/verify-otp",
     verifyUser: "check-user",
     switchUser: "user/switch-role",
@@ -47,19 +51,20 @@ export const BASE_URL =
     addunits: "landlord/property-unit/create",
 
     // Business
-    getcompanies: "ceo/company/get-all",
+    getcompanies: "company",
     registercompany: "ceo/company/register",
     updatecompany: "ceo/company/update",
     deletcompany: "ceo/company/delete",
 
-    branches: "ceo/company/branch/getall",
-    allbranch: "ceo/company/branch/getall-branches",
-    addbranch: "ceo/company/branch/create",
-    updatebranch: "ceo/company/branch/update",
+    branches: 'branch',
+    addbranches: "branch",
+    allbranch: "branch",
+    updatebranch: "branch",
+    deletebranch: "branch",
 
-    getemployee: "ceo/company/employee/getall",
+    getemployee: "staff",
     singleemployee: "ceo/company/employee/single",
-    addemployee: "ceo/company/employee/register",
+    addstaff: "staff",
     terminate: "ceo/company/employee/terminate",
     updateemployee: "ceo/company/employee/update",
 
