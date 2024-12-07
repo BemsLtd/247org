@@ -19,7 +19,6 @@ function Managebranches() {
   const {
     data: companies,
     isLoading: companyLoading,
-    error: companyError,
   } = useCompany();
   const [openModal, setOpenModal] = useState(false);
   const [company, setCompany] = useState(null);

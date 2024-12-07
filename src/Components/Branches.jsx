@@ -31,7 +31,7 @@ function Branch({ gridnum, pagination, id }) {
   const [page, setPage] = useState(1);
   const [message, setMessage] = useState({ status: "", message: null });
   const { data: branch, isLoading, error } = useBranch({user_id: id});
-  const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
+  const { data: companies, isLoading: companyLoading} = useCompany();
 
   const [openModal, setOpenModal] = useState(false);
   const [editBranch, setEditBranch] = useState(null);

@@ -26,7 +26,9 @@ function Events({ gridnum, pagination }) {
   const [page, setPage] = useState(1);
   const [message, setMessage] = useState({ status: "", message: null });
   const { data: properties, isLoading, error } = useProperties();
+const useProperties = null;
 
+  
   const [openModal, setOpenModal] = useState(false);
   const [editProperty, setEditProperty] = useState(null);
   const [formValues, setFormValues] = useState({
