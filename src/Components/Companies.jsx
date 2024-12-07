@@ -147,7 +147,7 @@ function Company({ gridnum, pagination }) {
         {error && <Typography color="error">{error.message}</Typography>}
         {(isLoading
           ? Array.from(new Array(10))
-          : companies.companies || []
+          : companies.data || []
         ).map((item, i) => (
           <Grid item xs={12} sm={gridnum} key={item?.id ?? `loading-${i}`}>
             {" "}
@@ -198,19 +198,19 @@ function Company({ gridnum, pagination }) {
                 ) : (
                   <>
                     <Typography gutterBottom variant="h6" component="div">
-                      {item?.company_name?.length > 30
-                        ? `${item.company_name.substr(0, 25)}...`
-                        : item?.company_name ?? "247 Building"}
+                      {item?.org_name?.length > 30
+                        ? `${item.org_name.substr(0, 25)}...`
+                        : item?.org_name ?? "247 Building"}
                     </Typography>
                     <Typography variant="body2" color="text.error">
                       Industry: {item?.industry ?? "Unknown"}
                     </Typography>
                     <Typography variant="body2" color="text.error">
-                      Email: {item?.company_email ?? "Unknown"}
+                      Email: {item?.email ?? "Unknown"}
                     </Typography>
                     <Typography variant="body2" color="text.error">
                       Phone:{" "}
-                      {item?.company_phone.replace("+234", "0") ?? "Unknown"}
+                      {item?.phone ?? "Unknown"}
                     </Typography>
                   </>
                 )}

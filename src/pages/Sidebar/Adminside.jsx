@@ -21,16 +21,6 @@ const userRole = useSelector((state) => state.userDetails.user.user?.role);
         name: "Manage Branches",
         icon: <Home />,
       },
-      {
-        link: `/${userRole}/manage-force`,
-        name: "Manage Force",
-        icon: <Home />,
-      },
-      {
-        link: `/${userRole}/onboarding`,
-        name: "Onboarding",
-        icon: <Home />,
-      },
     ];
 
     const eventSubMenu = [

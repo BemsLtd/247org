@@ -5,10 +5,9 @@ import { ENDPOINTS } from "../data/Endpoints";
 import makeAPIRequest from "../data";
 import useStaffs from "../data/Staffs";
 import Editstaffs from "./Modals/Editstaffs";
-import PropTypes from "prop-types";
 
-function Staffs({companydetails}) {
-  const { data: Staffs, isLoading, error } = useStaffs({user_id:companydetails.user_id, id: companydetails.id});
+function Staffs() {
+  const { data: Staffs, isLoading, error } = useStaffs();
   const [edit, setEdit] = useState(null);
   const [open, setOpen] = useState(true);
   const [message, setMessage] = useState({ status: "success", message: "this is an alert" });
@@ -17,15 +16,15 @@ function Staffs({companydetails}) {
     console.log(".....");
   }
 
-  const rows = Staffs?.employees.map((data, i) => ({
+  const rows = Staffs?.data.map((data, i) => ({
     id: i + 1,
     Itemid: data.employee_id,
     fullname: data.employee_firstname + " " + data.employee_lastname,
-    role: data.job_role,
+    role: data.position,
     email: data.employee_email,
     type: data.employment_type,
-    address: data.employee_address,
-    status: data.is_staff ? "Active" : "Inactive",
+    address: data.branch.address,
+    status: data.status ? "Active" : "Inactive",
   }));
 
   const columns = [
@@ -108,7 +107,5 @@ function Staffs({companydetails}) {
     </>
   );
 }
-Staffs.propTypes = {
-  companydetails: PropTypes.object.isRequired,
-};
+
 export default Staffs;

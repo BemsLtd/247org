@@ -12,8 +12,6 @@ import ManageManifest from "../pages/ManageManifest";
 import Managereport from "../pages/medicals/Medicalreports";
 import RequestReport from "../pages/medicals/Requestreport";
 import Crimediary from "../pages/CrimeDiary";
-import Managetenats from "../pages/Managetenats";
-import Manageunits from "../pages/Manageunits";
 import Users from "../Components/Users";
 import ManageForce from "../pages/admin/Manageforce";
 import Onboarding from "../pages/admin/Onboarding";
@@ -35,8 +33,6 @@ export default function UnitAdminRoutes() {
       <Route path="/medical-reports" element={<Managereport />} />
       <Route path="/request-report" element={<RequestReport />} />
       <Route path="/crime-diary" element={<Crimediary />} />
-      <Route path="/manage-tenants" element={<Managetenats />} />
-      <Route path="/manage-units" element={<Manageunits />} />
       <Route path="/missing-persons" element={<WantedPerson />} />
       <Route path="/users" element={<Users />} />
       <Route path="/manage-force" element={<ManageForce />} />

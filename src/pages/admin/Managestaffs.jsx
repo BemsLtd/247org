@@ -15,14 +15,12 @@ import { Link as Linker } from "react-router-dom";
 import { Add, Business, Search } from "@mui/icons-material";
 import { useState } from "react";
 import Staffs from "../../Components/Staffs";
-import useCompany from "../../data/Company";
 import useBranch from "../../data/Branch";
 import Addstaff from "../../Components/Modals/AddStaffs"
 
 export default function Managestaffs() {
   const [openModal, setOpenModal] = useState(false);
   const [companydetail, setCompanydetail] = useState({user_id: null, id: null});
-  const { data: companies, isLoading: companiesLoading, error: companiesError} = useCompany();
   const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({ user_id: companydetail.user_id });
 
   const handleAddSTaffs = (value) => {
@@ -30,13 +28,13 @@ export default function Managestaffs() {
   };
 
   const renderUnits = () => {
-    if (!companydetail.user_id && !companydetail.id) {
-      return (
-        <Typography>Select a company and branch to view staffs</Typography>
-      );
-    }
+    // if (!companydetail.user_id && !companydetail.id) {
+    //   return (
+    //     <Typography>Select a company and branch to view staffs</Typography>
+    //   );
+    // }
 
-    return <Staffs companydetails={companydetail} />;
+    return <Staffs />;
   };
 
   return (
@@ -77,7 +75,7 @@ export default function Managestaffs() {
             }}
             sx={{ minWidth: 300 }}
           />
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               justifyContent: "center",
@@ -115,7 +113,7 @@ export default function Managestaffs() {
                   ))
                 : !companiesLoading && <div>{companiesError?.message}</div>}
             </Grid>
-          </Box>
+          </Box> */}
           <Divider sx={{ marginTop: 2 }} />
           <Box
             sx={{

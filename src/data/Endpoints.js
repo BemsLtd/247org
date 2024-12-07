@@ -34,12 +34,7 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     add_medical: "medical/record/create",
     update_medial2: "medical/record/update", 
 
-    // properties
-    properties: "landlord/get-properties",
-    addproperty: "landlord/create-property",
-    editproperty: "landlord/update-property",
-    getunit: "landlord/property-unit/getall",
-    editunit: "landlord/property-unit/update",
+
 
     registertenat: "landlord/register-tenant",
     addtenantunit: "landlord/property-unit/add-tenant",
@@ -52,9 +47,6 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
 
     // Business
     getcompanies: "company",
-    registercompany: "ceo/company/register",
-    updatecompany: "ceo/company/update",
-    deletcompany: "ceo/company/delete",
 
     branches: 'branch',
     addbranches: "branch",

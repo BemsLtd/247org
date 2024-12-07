@@ -2,16 +2,11 @@ import { useQuery } from "@tanstack/react-query"
 import makeAPIRequest from ".";
 import { ENDPOINTS } from "./Endpoints";
 
-const useStaffs = ({user_id,id}) => {
+const useStaffs = () => {
     return useQuery({
-      queryKey: ["Staffs", user_id, id],
+      queryKey: ["Staffs",],
       queryFn: async () => {
-        if(!user_id || !id){
-          return 
-        }
-        const response = await makeAPIRequest.get(
-          `${ENDPOINTS.getemployee}?user_id=${user_id}&id=${id}`
-        );
+        const response = await makeAPIRequest.get(ENDPOINTS.getemployee);
 
         if (!response.data) {
           throw new Error("Network response was not ok");
@@ -19,7 +14,7 @@ const useStaffs = ({user_id,id}) => {
 
         return response.data;
       },
-      enabled: !!user_id,
+      // enabled: !!user_id,
     });
 }
 
