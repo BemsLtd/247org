@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import { ColorModeContext } from "./ThemeContext";
 import { green } from "@mui/material/colors";
+import "../index.css";
 
 export const ThemeToggleProvider = ({ children }) => {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");

@@ -139,7 +139,7 @@ function Branch({ gridnum, pagination, id }) {
                       JSON.parse(item?.image).map((file, index) => (
                         <Paper key={index}>
                           <img
-                            src={`${BASE_URL}storage/${file}`}
+                            src={file}
                             alt={`preview-${index}`}
                             width="100%"
                             style={{
@@ -153,7 +153,7 @@ function Branch({ gridnum, pagination, id }) {
                     ) : (
                       <Paper>
                         <img
-                          src={`${BASE_URL}storage/${item.image}`}
+                          src={item.image}
                           alt={`preview-single`}
                           width="100%"
                           style={{

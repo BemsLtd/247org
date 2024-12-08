@@ -26,12 +26,7 @@ import makeAPIRequest from "../data";
 import { ENDPOINTS } from "../data/Endpoints";
  import * as Yup from "yup";
 import Notice from "../Components/Notice";
-import SelectCom from "../Components/SelectCom";
-// import Vehicle from "../Components/Profiles/Vehicle";
 import Employment from "../Components/Profiles/Employment";
-import Medical from "../Components/Profiles/Medical";
-import VehicleForm from "../Components/Profiles/Vehicle";
-import PhoneForm from "../Components/Profiles/Phone"
 
 const ProfileBox = styled(Box)({
   minHeight: "300px",
@@ -85,40 +80,13 @@ function a11yProps(index) {
 }
 
   const validationSchema = Yup.object({
-    first_name: Yup.string()
+    org_name: Yup.string()
       .max(15, "Must be 15 characters or less")
       .required("Required"),
-    middle_name: Yup.string(),
-    last_name: Yup.string()
-      .max(20, "Must be 20 characters or less")
-      .required("Required"),
     email: Yup.string().email("Invalid email address").required("Required"),
-    phone: Yup.string().required("Required"),
+    org_phone: Yup.string().required("Required"),
     address: Yup.string().required("Address is required"),
-
-    gender: Yup.string()
-      .oneOf(["male", "female", "other"], "Invalid gender")
-      .required("Gender is required"),
-
-    nin: Yup.string()
-      .matches(/^[A-Z0-9]+$/, "NIN is not valid")
-      .required("NIN is required"),
-
-    plate_number: Yup.string().nullable(), 
-
-    kin_firstname: Yup.string().required("Kin first name is required"),
-
-    kin_middlename: Yup.string().nullable(), 
-
-    kin_lastname: Yup.string().required("Kin last name is required"),
-
-    kin_phone: Yup.string()
-      .matches(/^[0-9]+$/, "Kin phone number is not valid")
-      .required("Kin phone number is required"),
-
-    kin_email: Yup.string()
-      .email("Invalid kin email address")
-      .required("Kin email is required"),
+    cac: Yup.number().required('Cac number is required')
   });
   
 function Profile() {
@@ -126,27 +94,17 @@ function Profile() {
   const [edit, setEdit] =useState(false)
   const [value, setValue] = useState(0);
   const [message, setMessage] = useState({ type: "", message: null });
-  const [vehicles, setVehicles] = useState(user.vehicle);
-  const [phones, setPhones] = useState(user.phone_gadget);
+  // const [vehicles, setVehicles] = useState(user.vehicle);
+  // const [phones, setPhones] = useState(user.phone_gadget);
 
 
    const formik = useFormik({
      initialValues: {
-       first_name: user.first_name || "",
-       last_name: user.last_name || "",
-       middle_name: user.middle_name || "",
-       phone: user.phone || "",
-       email: user.email || "",
-       dob: user.dob || "",
+       org_name: user.user.org_name || "",
+       org_phone: user.user.org_phone || "",
+       org_email: user.user.org_email || "",
        address: user.address || "",
-       gender: user.gender || "",
-       nin: user.nin || "",
-       plate_number: user.plate_number || "",
-       kin_firstname: user.kin_firstname || "",
-       kin_middlename: user.kin_middlename || "",
-       kin_lastname: user.kin_lastname || "",
-       kin_phone: user.kin_phone || "",
-       kin_email: user.kin_email || "",
+       cac : user.cac
      },
      validationSchema,
      onSubmit: async (values) => {
@@ -275,10 +233,10 @@ function Profile() {
             aria-label="basic tabs example"
           >
             <Tab label="Biography" {...a11yProps(0)} />
-            <Tab label="Employment" {...a11yProps(1)} />
-            <Tab label="Vehicle" {...a11yProps(2)} />
+            <Tab label="Company Id" {...a11yProps(1)} />
+            {/* <Tab label="Vehicle" {...a11yProps(2)} />
             <Tab label="Phone IMEL" {...a11yProps(3)} />
-            <Tab label="Medicals" {...a11yProps(4)} />
+            <Tab label="Medicals" {...a11yProps(4)} /> */}
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -345,82 +303,40 @@ function Profile() {
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4}>
                       <InputCom
-                        id="first_name"
-                        label="First Name"
-                        value={formik.values.first_name}
+                        id="org_name"
+                        label="Organisation Name"
+                        value={formik.values.org_name}
                         type="text"
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         error={
-                          formik.touched.first_name && formik.errors.first_name
+                          formik.touched.org_name && formik.errors.org_name
                             ? true
                             : false
                         }
                         helperText={
-                          formik.touched.first_name && formik.errors.first_name
-                            ? formik.errors.first_name
+                          formik.touched.org_name && formik.errors.org_name
+                            ? formik.errors.org_name
                             : null
                         }
                       />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
                       <InputCom
-                        id="middle_name"
-                        label="Middle Name"
-                        value={formik.values.middle_name}
+                        id="org_phone"
+                        label="Organisation phone"
                         type="text"
+                        value={formik.values.org_phone}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         error={
-                          formik.touched.middle_name &&
-                          formik.errors.middle_name
+                          formik.touched.org_phone && formik.errors.org_phone
                             ? true
                             : false
                         }
                         helperText={
-                          formik.touched.middle_name &&
-                          formik.errors.middle_name
-                            ? formik.errors.middle_name
-                            : null
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="last_name"
-                        label="Last Name"
-                        value={formik.values.last_name}
-                        type="text"
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.last_name && formik.errors.last_name
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.last_name && formik.errors.last_name
-                            ? formik.errors.last_name
-                            : null
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="phone"
-                        label="phone"
-                        type="text"
-                        value={formik.values.phone}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.phone && formik.errors.phone
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.phone && formik.errors.phone
-                            ? formik.errors.phone
+                          formik.touched.org_phone && formik.errors.org_phone
+                            ? formik.errors.org_phone
                             : null
                         }
                       />
@@ -430,40 +346,22 @@ function Profile() {
                         id="email"
                         label="Email"
                         type="email"
-                        value={formik.values.email}
+                        value={formik.values.org_email}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         error={
-                          formik.touched.email && formik.errors.email
+                          formik.touched.org_email && formik.errors.org_email
                             ? true
                             : false
                         }
                         helperText={
-                          formik.touched.email && formik.errors.email
-                            ? formik.errors.email
+                          formik.touched.org_email && formik.errors.org_email
+                            ? formik.errors.org_email
                             : null
                         }
                       />
                     </Grid>
-                    {/* Date of Birth */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="dob"
-                        label="Date of Birth"
-                        type="date"
-                        value={formik.values.dob}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.dob && formik.errors.dob ? true : false
-                        }
-                        helperText={
-                          formik.touched.dob && formik.errors.dob
-                            ? formik.errors.dob
-                            : null
-                        }
-                      />
-                    </Grid>
+                    
 
                     {/* Address */}
                     <Grid item xs={12} sm={6} md={4}>
@@ -486,181 +384,25 @@ function Profile() {
                       />
                     </Grid>
 
-                    {/* Gender */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <SelectCom
-                        id="gender"
-                        name="gender"
-                        value={formik.values.gender}
-                        label="Gender"
-                        options={[
-                          { value: "male", text: "Male" },
-                          { value: "female", text: "Female" },
-                        ]}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={
-                          formik.touched.gender && formik.errors.gender
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.gender && formik.errors.gender
-                            ? formik.errors.gender
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* National Identification Number (NIN) */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="nin"
-                        label="National ID (NIN)"
-                        value={formik.values.nin}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.nin && formik.errors.nin ? true : false
-                        }
-                        helperText={
-                          formik.touched.nin && formik.errors.nin
-                            ? formik.errors.nin
-                            : null
-                        }
-                      />
-                    </Grid>
 
                     {/* Plate Number */}
                     <Grid item xs={12} sm={6} md={4}>
                       <InputCom
-                        id="plate_number"
-                        label="Plate Number"
-                        value={formik.values.plate_number}
+                        id="cac"
+                        label="CAC"
+                        value={formik.values.cac}
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
                         error={
-                          formik.touched.plate_number &&
-                          formik.errors.plate_number
+                          formik.touched.cac &&
+                          formik.errors.cac
                             ? true
                             : false
                         }
                         helperText={
-                          formik.touched.plate_number &&
-                          formik.errors.plate_number
-                            ? formik.errors.plate_number
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* Kin First Name */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="kin_firstname"
-                        label="Kin First Name"
-                        value={formik.values.kin_firstname}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.kin_firstname &&
-                          formik.errors.kin_firstname
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.kin_firstname &&
-                          formik.errors.kin_firstname
-                            ? formik.errors.kin_firstname
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* Kin Middle Name */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="kin_middlename"
-                        label="Kin Middle Name"
-                        value={formik.values.kin_middlename}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.kin_middlename &&
-                          formik.errors.kin_middlename
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.kin_middlename &&
-                          formik.errors.kin_middlename
-                            ? formik.errors.kin_middlename
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* Kin Last Name */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="kin_lastname"
-                        label="Kin Last Name"
-                        value={formik.values.kin_lastname}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.kin_lastname &&
-                          formik.errors.kin_lastname
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.kin_lastname &&
-                          formik.errors.kin_lastname
-                            ? formik.errors.kin_lastname
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* Kin Phone */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="kin_phone"
-                        label="Kin Phone"
-                        value={formik.values.kin_phone}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.kin_phone && formik.errors.kin_phone
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.kin_phone && formik.errors.kin_phone
-                            ? formik.errors.kin_phone
-                            : null
-                        }
-                      />
-                    </Grid>
-
-                    {/* Kin Email */}
-                    <Grid item xs={12} sm={6} md={4}>
-                      <InputCom
-                        id="kin_email"
-                        label="Kin Email"
-                        type="email"
-                        value={formik.values.kin_email}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.kin_email && formik.errors.kin_email
-                            ? true
-                            : false
-                        }
-                        helperText={
-                          formik.touched.kin_email && formik.errors.kin_email
-                            ? formik.errors.kin_email
+                          formik.touched.cac &&
+                          formik.errors.cac
+                            ? formik.errors.cac
                             : null
                         }
                       />
@@ -681,30 +423,36 @@ function Profile() {
               }}
             >
               <Box display={"flex"} gap={1} p={2}>
-                <Typography variant="p">Fullname:</Typography>
-                <Typography variant="p">
-                  {user.first_name} {user.middle_name} {user.last_name}
-                </Typography>
+                <Typography variant="p">Organinsation Name:</Typography>
+                <Typography variant="p">{user.user.org_name}</Typography>
               </Box>
               <Box display={"flex"} gap={1} p={2}>
                 <Typography variant="p">Email Address:</Typography>
-                <Typography variant="p">{user.email}</Typography>
+                <Typography variant="p">{user.user.org_email}</Typography>
               </Box>
               <Box display={"flex"} gap={1} p={2}>
                 <Typography variant="p">Phone:</Typography>
-                <Typography variant="p">{user.phone}</Typography>
+                <Typography variant="p">{user.user.org_phone}</Typography>
               </Box>
               <Box display={"flex"} gap={1} p={2}>
-                <Typography variant="p">Fullname:</Typography>
-                <Typography variant="p">Innocent Ebubechukwu</Typography>
+                <Typography variant="p">Address:</Typography>
+                <Typography variant="p">{user.address}</Typography>
+              </Box>
+              <Box display={"flex"} gap={1} p={2}>
+                <Typography variant="p">CAC:</Typography>
+                <Typography variant="p">{user.cac}</Typography>
+              </Box>
+              <Box display={"flex"} gap={1} p={2}>
+                <Typography variant="p">Industry:</Typography>
+                <Typography variant="p">{user.user.industry}</Typography>
               </Box>
             </Box>
           )}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <Employment user={user.employment} />
+          <Employment user={user.user} />
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
+        {/* <CustomTabPanel value={value} index={2}>
           <VehicleForm
             user={user}
             vehicles={vehicles}
@@ -727,7 +475,7 @@ function Profile() {
             setEdit={setEdit}
             setMessage={setMessage}
           />
-        </CustomTabPanel>
+        </CustomTabPanel> */}
       </Box>
       <Footer />
     </Container>
