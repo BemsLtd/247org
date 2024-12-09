@@ -20,6 +20,7 @@ const makeAPIRequest = axios.create({
   headers: getDefaultHeaders(),
 });
 
+
 makeAPIRequest.interceptors.response.use(
   (response) => response, 
   (error) => {

@@ -64,7 +64,13 @@ export default function Login() {
       setMessage({ type: "success", message: message });
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(TOKEN_KEY2, second_token);
-      console.log('this is token 2', second_token);
+      console.log('this is token 2', second_token
+
+
+
+
+        
+      );
       
       dispatch(updateUserDetails({ user })); // Save user details in the store
       navigate(`/${user.role}`, { replace: true }); // Redirect based on role

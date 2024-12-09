@@ -3,7 +3,7 @@ import { Button, CircularProgress,  Stack,} from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
-import makeAPIRequest2 from "../../data";
+import makeAPIRequest2 from "../../data/endpoint2";
 import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -20,14 +20,16 @@ function Addstaff({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
   
   const validationSchema = Yup.object({
-      user_id: Yup.number().required("Company ID is required"),
-      id: Yup.string().nullable(), 
+      org_id: Yup.number().nullable(),
+      branch_id: Yup.string().nullable(), 
+      user_id: Yup.string().nullable(), 
+      unit_id: Yup.string().nullable(), 
+      rank: Yup.string().nullable(), 
       employee_email: Yup.string().email("Must be a valid email").required("Email is required"),
-      job_role: Yup.string().required("Job role is required"),
+      position: Yup.string().required("Job role is required"),
       job_description: Yup.string().required("Job description is required"),
-      resume_date: Yup.date().required("Resume date is required").max(new Date(), "Resume date cannot be in the future"),
+      dateofemployment: Yup.date().required("Resume date is required").max(new Date(), "Resume date cannot be in the future"),
       stopping_date: Yup.date().nullable().notRequired(),
-      address: Yup.string().nullable(),
       work_type: Yup.string().oneOf(
           ["on-site", "remote", "hybrid"],
           "Work type must be either on-site, remote, or hybrid"
@@ -42,14 +44,16 @@ function Addstaff({ open, handleClose }) {
 
   const formik = useFormik({
     initialValues: {
+      org_id: "",
+      branch_id: "",
       user_id: "",
-      id: "",
+      unit_id: "",
+      rank: "",
       employee_email: "",
-      job_role: "",
+      position: "",
       job_description: "",
-      resume_date: "",
+      dateofemployment: "",
       stopping_date: "",
-      address: "",
       work_type: "on-site",
       employment_type: "fulltime",
       first_name: "",
@@ -61,30 +65,10 @@ function Addstaff({ open, handleClose }) {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
-      const employee = {
-        user_id: values.user_id,
-        id: values.id,
-        employee_email: values.employee_email,
-        job_role: values.job_role,
-        job_description: values.job_description,
-        resume_date: values.resume_date,
-        stopping_date: values.stopping_date,
-        work_type: values.work_type,
-        employment_type: values.employment_type,
-      };
+      
       try {
-        if (adduser) {
-          await addUser(
-            values.first_name,
-            values.middle_name,
-            values.last_name,
-            values.employee_email,
-            values.phone,
-            values.address
-          );
-        }
-
-        const res = await makeAPIRequest.post(ENDPOINTS.addstaff, employee);
+        
+        const res = await makeAPIRequest.post(ENDPOINTS.addstaff, values);
         const { success, message } = res.data;
 
         if (success) {
@@ -102,59 +86,62 @@ function Addstaff({ open, handleClose }) {
 
 
 
-    useEffect(() => {
-      if (!formik.values.employee_email) {
-        return;
-      }
-      const user = async () => {
-        try {
-          setLoading(true);
-          const response = await makeAPIRequest2.post(ENDPOINTS.verifyUser, {
-            email: formik.values.employee_email,
-          });
-          const { success } = response.data;
-          if (success) {
-            setMessage({ type: "success", message: "User found" });
-            setLoading(false);
-            setAddUser(false);
-          } else {
-            setLoading(false);
-          }
-        } catch (error) {
-          setLoading(false);
-          setMessage({ type: "error", message: error.message });
-          setAddUser(true);
-        }
-      };
-      user();
-      const IntervalId = setInterval(user, 5000);
-
-      return () => clearInterval(IntervalId);
-    }, [formik.values.employee_email]);
-
-
-    const addUser = async ( first_name,  middle_name, last_name, email, phone, address) => {
+  useEffect(() => {
+    if (!formik.values.employee_email) {
+      return;
+    }
+    const user = async () => {
       try {
-        const res = await makeAPIRequest.post(ENDPOINTS.minireg, {
-          first_name,
-          middle_name,
-          last_name,
-          email,
-          phone,
-          address,
+        setLoading(true);
+        const response = await makeAPIRequest2.post(ENDPOINTS.verifyUser, {
+          email: formik.values.employee_email,
         });
-        const { success, message } = res.data;
+        const { success, data } = response.data;
         if (success) {
-          setMessage({ type: "success", message });
+          setMessage({ type: "success", message: "User found" });
+          // Save the user_id to formik values
+          console.log(data);
+          
+          formik.setFieldValue('user_id', data);
+          setLoading(false);
+          setAddUser(false);
         } else {
-          setMessage({ type: "error", message });
+          setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         setMessage({ type: "error", message: error.message });
+        setAddUser(true);
       }
     };
+    user();
+    const IntervalId = setInterval(user, 5000);
+  
+    return () => clearInterval(IntervalId);
+  }, [formik.values.employee_email]);
 
-  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({user_id: formik.values.user_id});
+
+    // const addUser = async ( first_name,  middle_name, last_name, email, phone) => {
+    //   try {
+    //     const res = await makeAPIRequest.post(ENDPOINTS.addstaff, {
+    //       first_name,
+    //       middle_name,
+    //       last_name,
+    //       email,
+    //       phone,
+    //     });
+    //     const { success, message } = res.data;
+    //     if (success) {
+    //       setMessage({ type: "success", message });
+    //     } else {
+    //       setMessage({ type: "error", message });
+    //     }
+    //   } catch (error) {
+    //     setMessage({ type: "error", message: error.message });
+    //   }
+    // };
+
+  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({org_id: formik.values.org_id});
 
 
   return (
@@ -169,11 +156,11 @@ function Addstaff({ open, handleClose }) {
       <h2>Add New Staff</h2>
       <form onSubmit={formik.handleSubmit}>
         <Stack spacing={2}>
-          {/* user_id Select Component */}
+          {/* org_id Select Component */}
           <SelectCom
-            id="user_id"
-            name="user_id"
-            value={formik.values.user_id}
+            id="org_id"
+            name="org_id"
+            value={formik.values.org_id}
             label="Select Company"
             options={
               companyLoading
@@ -188,10 +175,10 @@ function Addstaff({ open, handleClose }) {
             }
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
-            error={formik.touched.user_id && formik.errors.user_id}
+            error={formik.touched.org_id && formik.errors.org_id}
             helperText={
-              formik.touched.user_id && formik.errors.user_id
-                ? formik.errors.user_id
+              formik.touched.org_id && formik.errors.org_id
+                ? formik.errors.org_id
                 : null
             }
           />
@@ -222,6 +209,8 @@ function Addstaff({ open, handleClose }) {
                 : null
             }
           />
+         
+         
           {/* employee_email Input Component */}
           <InputCom
             id="employee_email"
@@ -241,6 +230,45 @@ function Addstaff({ open, handleClose }) {
             }
             endAdornmentIcon={loading && <CircularProgress size="30px" />}
           />
+          <InputCom
+                id="rank"
+                name="rank"
+                label="Rank"
+                value={formik.values.rank}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="text"
+                error={
+                  formik.touched.rank && formik.errors.rank
+                    ? true
+                    : false
+                }
+                helperText={
+                  formik.touched.rank && formik.errors.rank
+                    ? formik.errors.rank
+                    : null
+                }
+              />
+               
+              <InputCom
+                id="unit_id"
+                name="unit_id"
+                label="Unit Id"
+                value={formik.values.unit_id}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="text"
+                error={
+                  formik.touched.unit_id && formik.errors.unit_id
+                    ? true
+                    : false
+                }
+                helperText={
+                  formik.touched.unit_id && formik.errors.unit_id
+                    ? formik.errors.unit_id
+                    : null
+                }
+              />
           {adduser && (
             <>
               <InputCom
@@ -323,22 +351,7 @@ function Addstaff({ open, handleClose }) {
                     : null
                 }
               />
-              <InputCom
-                id="address"
-                name="address"
-                label="Employee Address"
-                value={formik.values.address}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                type="email"
-                error={formik.touched.address && formik.errors.address}
-                helperText={
-                  formik.touched.address && formik.errors.address
-                    ? formik.errors.address
-                    : null
-                }
-                endAdornmentIcon={loading && <CircularProgress size="30px" />}
-              />
+              
             </>
           )}
 
