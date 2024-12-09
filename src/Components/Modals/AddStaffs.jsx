@@ -1,5 +1,5 @@
 import ModalBox from "../Modal";
-import { Button, CircularProgress,  Stack,} from "@mui/material";
+import { Button, CircularProgress, Stack } from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
@@ -8,38 +8,47 @@ import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import Notice from "../Notice"
+import Notice from "../Notice";
 import SelectCom from "../SelectCom";
 import useCompany from "../../data/Company";
 import useBranch from "../../data/Branch";
+import Omit from "../../Services/Omit";
 
 function Addstaff({ open, handleClose }) {
-  const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
+  const {
+    data: companies,
+    isLoading: companyLoading,
+    error: companyError,
+  } = useCompany();
   const [message, setMessage] = useState({ status: "", message: null });
-  const [adduser, setAddUser]= useState(false)
+  const [adduser, setAddUser] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const validationSchema = Yup.object({
-      org_id: Yup.number().nullable(),
-      branch_id: Yup.string().nullable(), 
-      user_id: Yup.string().nullable(), 
-      unit_id: Yup.string().nullable(), 
-      rank: Yup.string().nullable(), 
-      employee_email: Yup.string().email("Must be a valid email").required("Email is required"),
-      position: Yup.string().required("Job role is required"),
-      job_description: Yup.string().required("Job description is required"),
-      dateofemployment: Yup.date().required("Resume date is required").max(new Date(), "Resume date cannot be in the future"),
-      stopping_date: Yup.date().nullable().notRequired(),
-      work_type: Yup.string().oneOf(
-          ["on-site", "remote", "hybrid"],
-          "Work type must be either on-site, remote, or hybrid"
-        ).required("Work type is required"),
-      employment_type: Yup.string()
-        .oneOf(
-          ["fulltime", "parttime", "contract"],
-          "Employment type must be full-time, part-time, or contract"
-        )
-        .required("Employment type is required"),
+    org_id: Yup.number().nullable(),
+    branch_id: Yup.string().nullable(),
+    user_id: Yup.string().nullable(),
+    unit_id: Yup.string().nullable(),
+    rank: Yup.string().nullable(),
+    email: Yup.string().email("Must be a valid email").nullable(),
+    position: Yup.string().required("Job role is required"),
+    job_description: Yup.string().required("Job description is required"),
+    dateofemployment: Yup.date()
+      .required("Resume date is required")
+      .max(new Date(), "Resume date cannot be in the future"),
+    stopping_date: Yup.date().nullable().notRequired(),
+    work_type: Yup.string()
+      .oneOf(
+        ["on-site", "remote", "hybrid"],
+        "Work type must be either on-site, remote, or hybrid"
+      )
+      .required("Work type is required"),
+    employment_type: Yup.string()
+      .oneOf(
+        ["fulltime", "parttime", "contract"],
+        "Employment type must be full-time, part-time, or contract"
+      )
+      .required("Employment type is required"),
   });
 
   const formik = useFormik({
@@ -49,11 +58,9 @@ function Addstaff({ open, handleClose }) {
       user_id: "",
       unit_id: "",
       rank: "",
-      employee_email: "",
       position: "",
       job_description: "",
       dateofemployment: "",
-      stopping_date: "",
       work_type: "on-site",
       employment_type: "fulltime",
       first_name: "",
@@ -61,17 +68,18 @@ function Addstaff({ open, handleClose }) {
       last_name: "",
       email: "",
       phone: "",
+      status: 1,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
-      
+      const tosubmit = Omit(values);
+      console.log(tosubmit);
       try {
-        
-        const res = await makeAPIRequest.post(ENDPOINTS.addstaff, values);
-        const { success, message } = res.data;
+        const res = await makeAPIRequest.post(ENDPOINTS.addstaff, tosubmit);
+        const { status, message } = res.data;
 
-        if (success) {
+        if (status) {
           setMessage({ type: "success", message });
           handleClose();
         } else {
@@ -84,25 +92,23 @@ function Addstaff({ open, handleClose }) {
     },
   });
 
-
-
   useEffect(() => {
-    if (!formik.values.employee_email) {
+    if (!formik.values.email) {
       return;
     }
     const user = async () => {
       try {
         setLoading(true);
         const response = await makeAPIRequest2.post(ENDPOINTS.verifyUser, {
-          email: formik.values.employee_email,
+          email: formik.values.email,
         });
         const { success, data } = response.data;
         if (success) {
           setMessage({ type: "success", message: "User found" });
           // Save the user_id to formik values
           console.log(data);
-          
-          formik.setFieldValue('user_id', data);
+
+          formik.setFieldValue("user_id", data);
           setLoading(false);
           setAddUser(false);
         } else {
@@ -116,33 +122,35 @@ function Addstaff({ open, handleClose }) {
     };
     user();
     const IntervalId = setInterval(user, 5000);
-  
+
     return () => clearInterval(IntervalId);
-  }, [formik.values.employee_email]);
+  }, [formik.values.email]);
 
+  // const addUser = async ( first_name,  middle_name, last_name, email, phone) => {
+  //   try {
+  //     const res = await makeAPIRequest.post(ENDPOINTS.addstaff, {
+  //       first_name,
+  //       middle_name,
+  //       last_name,
+  //       email,
+  //       phone,
+  //     });
+  //     const { success, message } = res.data;
+  //     if (success) {
+  //       setMessage({ type: "success", message });
+  //     } else {
+  //       setMessage({ type: "error", message });
+  //     }
+  //   } catch (error) {
+  //     setMessage({ type: "error", message: error.message });
+  //   }
+  // };
 
-    // const addUser = async ( first_name,  middle_name, last_name, email, phone) => {
-    //   try {
-    //     const res = await makeAPIRequest.post(ENDPOINTS.addstaff, {
-    //       first_name,
-    //       middle_name,
-    //       last_name,
-    //       email,
-    //       phone,
-    //     });
-    //     const { success, message } = res.data;
-    //     if (success) {
-    //       setMessage({ type: "success", message });
-    //     } else {
-    //       setMessage({ type: "error", message });
-    //     }
-    //   } catch (error) {
-    //     setMessage({ type: "error", message: error.message });
-    //   }
-    // };
-
-  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({org_id: formik.values.org_id});
-
+  const {
+    data: branch,
+    isLoading: branchLoading,
+    error: branchError,
+  } = useBranch({ org_id: formik.values.org_id });
 
   return (
     <ModalBox open={open} handleClose={handleClose}>
@@ -184,9 +192,9 @@ function Addstaff({ open, handleClose }) {
           />
           {/* id Select Component */}
           <SelectCom
-            id="id"
-            name="id"
-            value={formik.values.id}
+            id="branch_id"
+            name="branch_id"
+            value={formik.values.branch_id}
             label={branchLoading ? "Loading Branches" : "Select Branch"}
             options={
               branchLoading
@@ -202,73 +210,64 @@ function Addstaff({ open, handleClose }) {
             }
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
-            error={formik.touched.id && formik.errors.id}
+            error={formik.touched.branch_id && formik.errors.branch_id}
             helperText={
-              formik.touched.id && formik.errors.id
-                ? formik.errors.id
+              formik.touched.branch_id && formik.errors.branch_id
+                ? formik.errors.branch_id
                 : null
             }
           />
-         
-         
+
           {/* employee_email Input Component */}
           <InputCom
-            id="employee_email"
-            name="employee_email"
+            id="email"
+            name="email"
             label="Employee Email"
-            value={formik.values.employee_email}
+            value={formik.values.email}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             type="email"
-            error={
-              formik.touched.employee_email && formik.errors.employee_email
-            }
+            error={formik.touched.email && formik.errors.email}
             helperText={
-              formik.touched.employee_email && formik.errors.employee_email
-                ? formik.errors.employee_email
+              formik.touched.email && formik.errors.email
+                ? formik.errors.email
                 : null
             }
             endAdornmentIcon={loading && <CircularProgress size="30px" />}
           />
           <InputCom
-                id="rank"
-                name="rank"
-                label="Rank"
-                value={formik.values.rank}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                type="text"
-                error={
-                  formik.touched.rank && formik.errors.rank
-                    ? true
-                    : false
-                }
-                helperText={
-                  formik.touched.rank && formik.errors.rank
-                    ? formik.errors.rank
-                    : null
-                }
-              />
-               
-              <InputCom
-                id="unit_id"
-                name="unit_id"
-                label="Unit Id"
-                value={formik.values.unit_id}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                type="text"
-                error={
-                  formik.touched.unit_id && formik.errors.unit_id
-                    ? true
-                    : false
-                }
-                helperText={
-                  formik.touched.unit_id && formik.errors.unit_id
-                    ? formik.errors.unit_id
-                    : null
-                }
-              />
+            id="rank"
+            name="rank"
+            label="Rank"
+            value={formik.values.rank}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            error={formik.touched.rank && formik.errors.rank ? true : false}
+            helperText={
+              formik.touched.rank && formik.errors.rank
+                ? formik.errors.rank
+                : null
+            }
+          />
+
+          <InputCom
+            id="unit_id"
+            name="unit_id"
+            label="Unit Id"
+            value={formik.values.unit_id}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            error={
+              formik.touched.unit_id && formik.errors.unit_id ? true : false
+            }
+            helperText={
+              formik.touched.unit_id && formik.errors.unit_id
+                ? formik.errors.unit_id
+                : null
+            }
+          />
           {adduser && (
             <>
               <InputCom
@@ -351,23 +350,22 @@ function Addstaff({ open, handleClose }) {
                     : null
                 }
               />
-              
             </>
           )}
 
           {/* job_role Input Component */}
           <InputCom
-            id="job_role"
-            name="job_role"
+            id="position"
+            name="position"
             label="Job Role"
-            value={formik.values.job_role}
+            value={formik.values.position}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             type="text"
-            error={formik.touched.job_role && formik.errors.job_role}
+            error={formik.touched.position && formik.errors.position}
             helperText={
-              formik.touched.job_role && formik.errors.job_role
-                ? formik.errors.job_role
+              formik.touched.position && formik.errors.position
+                ? formik.errors.position
                 : null
             }
           />
@@ -389,19 +387,21 @@ function Addstaff({ open, handleClose }) {
                 : null
             }
           />
-          {/* resume_date Date Input Component */}
+          {/* dateofemployment Date Input Component */}
           <InputCom
-            id="resume_date"
-            name="resume_date"
+            id="dateofemployment"
+            name="dateofemployment"
             label="Resume Date"
-            value={formik.values.resume_date}
+            value={formik.values.dateofemployment}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             type="date"
-            error={formik.touched.resume_date && formik.errors.resume_date}
+            error={
+              formik.touched.dateofemployment && formik.errors.dateofemployment
+            }
             helperText={
-              formik.touched.resume_date && formik.errors.resume_date
-                ? formik.errors.resume_date
+              formik.touched.dateofemployment && formik.errors.dateofemployment
+                ? formik.errors.dateofemployment
                 : null
             }
           />
