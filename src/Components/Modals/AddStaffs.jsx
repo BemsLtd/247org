@@ -25,7 +25,7 @@ function Addstaff({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object({
-    org_id: Yup.number().nullable(),
+    org_id: Yup.string().nullable(),
     branch_id: Yup.string().nullable(),
     user_id: Yup.string().nullable(),
     unit_id: Yup.string().nullable(),
@@ -96,35 +96,35 @@ function Addstaff({ open, handleClose }) {
     if (!formik.values.email) {
       return;
     }
+  
+    let timeoutId;
     const user = async () => {
       try {
         setLoading(true);
-        const response = await makeAPIRequest2.post(ENDPOINTS.verifyUser, {
-          email: formik.values.email,
-        });
+        const response = await makeAPIRequest.get(`${ENDPOINTS.verifyUser}?email=${formik.values.email}`);
         const { success, data } = response.data;
+  
         if (success) {
           setMessage({ type: "success", message: "User found" });
-          // Save the user_id to formik values
-          console.log(data);
-
           formik.setFieldValue("user_id", data);
-          setLoading(false);
           setAddUser(false);
         } else {
-          setLoading(false);
+          setMessage({ type: "error", message: "User not found" });
+          setAddUser(true);
         }
       } catch (error) {
-        setLoading(false);
         setMessage({ type: "error", message: error.message });
         setAddUser(true);
+      } finally {
+        setLoading(false);
       }
     };
-    user();
-    const IntervalId = setInterval(user, 5000);
-
-    return () => clearInterval(IntervalId);
+  
+    timeoutId = setTimeout(user, 500); // Debounce API call
+  
+    return () => clearTimeout(timeoutId); // Clear debounce timeout
   }, [formik.values.email]);
+  
 
   // const addUser = async ( first_name,  middle_name, last_name, email, phone) => {
   //   try {

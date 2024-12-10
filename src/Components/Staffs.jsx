@@ -18,13 +18,13 @@ function Staffs() {
 
   const rows = Staffs?.data.map((data, i) => ({
     id: i + 1,
-    Itemid: data.employee_id,
-    fullname: data.employee_firstname + " " + data.employee_lastname,
+    Itemid: data.id,
+    fullname: data.first_name + " " + data.last_name,
     role: data.position,
-    email: data.employee_email,
+    email: data.email,
     type: data.employment_type,
-    address: data.branch.address,
-    status: data.status ? "Active" : "Inactive",
+    address: data.address,
+    status: data.is_staff ? "Active" : "Inactive",
   }));
 
   const columns = [
@@ -34,7 +34,6 @@ function Staffs() {
     { field: "role", headerName: "Role", width: 150 },
     { field: "email", headerName: "Email", width: 150 },
     { field: "type", headerName: "Employment type", width: 150 },
-    { field: "address", headerName: "Address", width: 150 },
     { field: "status", headerName: "Status", width: 150 },
   ];
 
@@ -45,7 +44,7 @@ function Staffs() {
   const handleDelete = async (id) => {
     try {
       const res = await makeAPIRequest.put(
-        `${ENDPOINTS.terminate}?employee_id=${id}`
+        `${ENDPOINTS.terminate}?id=${id}`
       );
       if (res.data) {
         setMessage({type: "success", message: res.data.message})

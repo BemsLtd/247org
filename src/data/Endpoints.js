@@ -16,7 +16,7 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     profile: "profile",
     updateprofile: "profile",
     verifyOtp: "auth/verify-otp",
-    verifyUser: "check-user",
+    verifyUser: "auth/verifyemail",
     switchUser: "user/switch-role",
     minireg: "user/indirect-register",
     addVehicle: "user/vehicle/register",
