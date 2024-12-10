@@ -40,13 +40,11 @@ export default function Register() {
       .required("Organization email is required."),
     avatar: Yup.mixed()
       .required("avatar is required"),
-      
+    
       
     org_phone: Yup.string().required("Organization phone number is required."),
+    abbr: Yup.string().transform((value)=>( value ? value.toUpperCase() : value)).required("Organization Abreviation is required."),
     address: Yup.string().required("Organization address is required."),
-    role: Yup.string()
-      .oneOf(["admin", "user", "landlord"], "Invalid Role")
-      .required("Role is required."),
     password: Yup.string()
       .min(8, "Password must be at least 8 characters")
       .required("Password is required."),
@@ -59,6 +57,7 @@ export default function Register() {
       org_name: "",
       org_email: "",
       org_phone: "",
+      abbr: "",
       address: "",
       role: "",
       password: "",
@@ -211,6 +210,22 @@ export default function Register() {
                     : false
                 }
                 helperText={formik.touched.org_phone && formik.errors.org_phone}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputCom
+                id="abbr"
+                label="Abbreviation"
+                value={formik.values.abbr}
+                onBlur={formik.handleBlur}
+                type="text"
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.abbr && formik.errors.abbr
+                    ? true
+                    : false
+                }
+                helperText={formik.touched.abbr && formik.errors.abbr}
               />
             </Grid>
             <Grid item xs={12} sm={6}>

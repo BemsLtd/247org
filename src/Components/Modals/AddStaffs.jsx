@@ -3,7 +3,6 @@ import { Button, CircularProgress, Stack } from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
-import makeAPIRequest2 from "../../data/endpoint2";
 import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
