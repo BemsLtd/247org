@@ -1,7 +1,5 @@
 
 import React from "react";
-import "./src/input.css";
-import "./src/output.css";
 export const Id2 = () => {
   return (
       <main className="h-[90vh] w-[60%] justify-center items-center relative">

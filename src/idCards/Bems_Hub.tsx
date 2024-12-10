@@ -1,8 +1,6 @@
 import React from "react";
-import "./src/input.css";
-import "./src/output.css"
 
-function Id() {
+function Bems_Hub() {
   return (
     <main className="h-[90vh] w-full justify-center items-center relative">
       <section className="border-[gray] border-2 w-[50vw] h-[62vh] justify-center rounded-xl bg-[#fcefd3]">
@@ -55,4 +53,4 @@ function Id() {
   );
 }
 
-export default Id;
+export default Bems_Hub;
