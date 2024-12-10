@@ -40,7 +40,7 @@ export default function Register() {
       .required("Organization email is required."),
     avatar: Yup.mixed()
       .required("avatar is required"),
-    
+      role: Yup.string().required("Role is required."),
       
     org_phone: Yup.string().required("Organization phone number is required."),
     abbr: Yup.string().transform((value)=>( value ? value.toUpperCase() : value)).required("Organization Abreviation is required."),
@@ -58,8 +58,8 @@ export default function Register() {
       org_email: "",
       org_phone: "",
       abbr: "",
+      role: "admin",
       address: "",
-      role: "",
       password: "",
       industry: "",
       avatar: null,
@@ -244,23 +244,7 @@ export default function Register() {
                 helperText={formik.touched.address && formik.errors.address}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <SelectCom
-                id="role"
-                name="role"
-                value={formik.values.role}
-                label="Role"
-                options={[
-                  { value: "admin", text: "Admin" },
-                  { value: "landlord", text: "Landlord" },
-                  { value: "user", text: "User" },
-                ]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.role && formik.errors.role ? true : false}
-                helperText={formik.touched.role && formik.errors.role}
-              />
-            </Grid>
+            
             <Grid item xs={12} sm={6}>
               <InputCom
                 id="password"
