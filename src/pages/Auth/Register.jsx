@@ -13,7 +13,6 @@ import AuthLayout from "./AuthLayout";
 import Logo from "/logo.png";
 import InputCom from "../../Components/InputCom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import SelectCom from "../../Components/SelectCom";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
