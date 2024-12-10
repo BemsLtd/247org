@@ -672,6 +672,11 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .mr-10 {
   margin-right: 2.5rem;
 }
@@ -816,6 +821,22 @@ video {
   height: 4rem;
 }
 
+.h-\[70vh\] {
+  height: 70vh;
+}
+
+.h-\[20vh\] {
+  height: 20vh;
+}
+
+.h-\[50vh\] {
+  height: 50vh;
+}
+
+.h-\[8\%\] {
+  height: 8%;
+}
+
 .w-20 {
   width: 5rem;
 }
@@ -920,6 +941,18 @@ video {
   width: 4rem;
 }
 
+.w-\[85\%\] {
+  width: 85%;
+}
+
+.w-\[10vw\] {
+  width: 10vw;
+}
+
+.w-\[30vw\] {
+  width: 30vw;
+}
+
 .max-w-\[100vw\] {
   max-width: 100vw;
 }
@@ -941,8 +974,16 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.flex-row {
+  flex-direction: row;
+}
+
 .flex-col {
   flex-direction: column;
+}
+
+.items-start {
+  align-items: flex-start;
 }
 
 .items-center {
@@ -963,6 +1004,10 @@ video {
 
 .justify-around {
   justify-content: space-around;
+}
+
+.justify-items-start {
+  justify-items: start;
 }
 
 .gap-1 {
@@ -1100,6 +1145,11 @@ video {
   border-color: rgb(15 23 42 / var(--tw-border-opacity, 1));
 }
 
+.border-green-900 {
+  --tw-border-opacity: 1;
+  border-color: rgb(20 83 45 / var(--tw-border-opacity, 1));
+}
+
 .border-b-red-700 {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(185 28 28 / var(--tw-border-opacity, 1));
@@ -1158,6 +1208,15 @@ video {
 .bg-slate-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(15 23 42 / var(--tw-bg-opacity, 1));
+}
+
+.bg-green-950 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(5 46 22 / var(--tw-bg-opacity, 1));
+}
+
+.bg-\[url\(\'\/new\.png\'\)\] {
+  background-image: url('/new.png');
 }
 
 .bg-cover {
@@ -1245,6 +1304,14 @@ video {
   padding-left: 90px;
 }
 
+.pl-6 {
+  padding-left: 1.5rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -1259,6 +1326,10 @@ video {
 
 .font-\[\'Arial\'\] {
   font-family: 'Arial';
+}
+
+.font-\[times-new-roman\] {
+  font-family: times-new-roman;
 }
 
 .text-2xl {
@@ -1337,12 +1408,20 @@ video {
   font-weight: 800;
 }
 
+.font-\[700\] {
+  font-weight: 700;
+}
+
 .italic {
   font-style: italic;
 }
 
 .leading-10 {
   line-height: 2.5rem;
+}
+
+.leading-9 {
+  line-height: 2.25rem;
 }
 
 .text-black {

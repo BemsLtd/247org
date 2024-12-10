@@ -1,6 +1,6 @@
 import React from "react";
 
-function Nigerian_Bar_Association() {
+function NBA() {
   return (
     <div className="p-3 flex justify-center items-center max-w-[100vw] relative">
       <main className="bg-[#fcefd3] h-[46%] w-[35%] border-[4px] border-black rounded-xl justify-center items-center">
@@ -56,5 +56,5 @@ function Nigerian_Bar_Association() {
   );
 }
 
-export default Nigerian_Bar_Association;
+export default NBA;
 
