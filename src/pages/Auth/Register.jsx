@@ -13,6 +13,7 @@ import AuthLayout from "./AuthLayout";
 import Logo from "/logo.png";
 import InputCom from "../../Components/InputCom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import SelectCom from "../../Components/SelectCom";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -31,6 +32,39 @@ export default function Register() {
     event.preventDefault();
   };
 
+  const industries = [
+    { value: "information", text: "Information and Communication" },
+    { value: "agriculture", text: "Agriculture" },
+    { value: "manufacturing", text: "Manufacturing" },
+    { value: "healthcare", text: "Healthcare" },
+    { value: "finance", text: "Finance and Insurance" },
+    { value: "education", text: "Education" },
+    { value: "retail", text: "Retail Trade" },
+    { value: "construction", text: "Construction" },
+    { value: "real_estate", text: "Real Estate" },
+    { value: "transportation", text: "Transportation and Warehousing" },
+    { value: "utilities", text: "Utilities" },
+    { value: "professional_services", text: "Professional, Scientific, and Technical Services" },
+    { value: "public_administration", text: "Public Administration" },
+    { value: "arts", text: "Arts, Entertainment, and Recreation" },
+    { value: "mining", text: "Mining, Quarrying, and Oil and Gas Extraction" },
+    { value: "wholesale", text: "Wholesale Trade" },
+    { value: "accommodation", text: "Accommodation and Food Services" },
+    { value: "administrative", text: "Administrative and Support Services" },
+    { value: "media", text: "Media and Publishing" },
+    { value: "technology", text: "Technology and Software Development" },
+    { value: "telecommunications", text: "Telecommunications" },
+    { value: "energy", text: "Energy" },
+    { value: "legal", text: "Legal Services" },
+    { value: "pharmaceuticals", text: "Pharmaceuticals" },
+    { value: "fashion", text: "Fashion and Apparel" },
+    { value: "automotive", text: "Automotive" },
+    { value: "military", text: "Military" },
+    { value: "para_military", text: "Para-military" },
+  ];
+  
+  
+
   // Validation schema
   const validationSchema = Yup.object({
     org_name: Yup.string().required("Organization name is required."),
@@ -47,7 +81,9 @@ export default function Register() {
     password: Yup.string()
       .min(8, "Password must be at least 8 characters")
       .required("Password is required."),
-    industry: Yup.string().required("Industry is required."),
+      industry: Yup.string()
+      .oneOf(industries, "Invalid industry. Please select a valid option.")
+      .required("Industry is required."),
   });
 
   // Formik setup
@@ -266,19 +302,17 @@ export default function Register() {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <InputCom
-                id="industry"
-                label="Industry"
-                value={formik.values.industry}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.industry && formik.errors.industry
-                    ? true
-                    : false
-                }
-                helperText={formik.touched.industry && formik.errors.industry}
-              />
+            <SelectCom
+  id="industry"
+  label="Industry"
+  value={formik.values.industry}
+  onBlur={formik.handleBlur}
+  onChange={(e) => formik.setFieldValue("industry", e.target.value)}
+  options={industries}
+  error={formik.touched.industry && formik.errors.industry ? true : false}
+  helperText={formik.touched.industry && formik.errors.industry}
+/>
+
             </Grid>
             <Grid item xs={12} sm={6}>
             <InputCom
