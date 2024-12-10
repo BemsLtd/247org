@@ -82,7 +82,7 @@ export default function Register() {
       .min(8, "Password must be at least 8 characters")
       .required("Password is required."),
       industry: Yup.string()
-      .oneOf(industries, "Invalid industry. Please select a valid option.")
+      // .oneOf(industries, "Invalid industry. Please select a valid option.")
       .required("Industry is required."),
   });
 
@@ -303,16 +303,15 @@ export default function Register() {
             </Grid>
             <Grid item xs={12} sm={6}>
             <SelectCom
-  id="industry"
-  label="Industry"
-  value={formik.values.industry}
-  onBlur={formik.handleBlur}
-  onChange={(e) => formik.setFieldValue("industry", e.target.value)}
-  options={industries}
-  error={formik.touched.industry && formik.errors.industry ? true : false}
-  helperText={formik.touched.industry && formik.errors.industry}
-/>
-
+              id="industry"
+              label="Industry"
+              value={formik.values.industry}
+              onBlur={formik.handleBlur}
+              onChange={(e) => formik.setFieldValue("industry", e.target.value)}
+              options={industries}
+              error={formik.touched.industry && formik.errors.industry ? true : false}
+              helperText={formik.touched.industry && formik.errors.industry}
+            />
             </Grid>
             <Grid item xs={12} sm={6}>
             <InputCom

@@ -16,7 +16,7 @@ function Staffs() {
     console.log(".....");
   }
 
-  const rows = Staffs?.data.map((data, i) => ({
+  const rows = Staffs?.data?.map((data, i) => ({
     id: i + 1,
     Itemid: data.id,
     fullname: data.first_name + " " + data.last_name,
