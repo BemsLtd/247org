@@ -24,6 +24,13 @@ function Addstaff({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object({
+    avatar: Yup.mixed()
+      .required("avatar is required")
+      .test("fileType", "Unsupported File Format", (value) => {
+        return (
+          value && ["image/jpeg", "image/jpg", "image/png"].includes(value.type)
+        );
+      }),
     org_id: Yup.string().nullable(),
     branch_id: Yup.string().nullable(),
     user_id: Yup.string().nullable(),
@@ -31,11 +38,18 @@ function Addstaff({ open, handleClose }) {
     rank: Yup.string().nullable(),
     email: Yup.string().email("Must be a valid email").nullable(),
     position: Yup.string().required("Job role is required"),
+    nin: Yup.string().required("NIN is required"),
     job_description: Yup.string().required("Job description is required"),
     dateofemployment: Yup.date()
       .required("Resume date is required")
       .max(new Date(), "Resume date cannot be in the future"),
     stopping_date: Yup.date().nullable().notRequired(),
+    gender: Yup.string()
+      .oneOf(
+        ["male", "female"],
+        "Gender must be either Male or Female"
+      )
+      .required("Gender is required"),
     work_type: Yup.string()
       .oneOf(
         ["on-site", "remote", "hybrid"],
@@ -52,14 +66,17 @@ function Addstaff({ open, handleClose }) {
 
   const formik = useFormik({
     initialValues: {
+      avatar: null,
       org_id: "",
       branch_id: "",
       user_id: "",
       unit_id: "",
       rank: "",
       position: "",
+      nin: "",
       job_description: "",
       dateofemployment: "",
+      gender: "male",
       work_type: "on-site",
       employment_type: "fulltime",
       first_name: "",
@@ -102,7 +119,7 @@ function Addstaff({ open, handleClose }) {
         setLoading(true);
         const response = await makeAPIRequest.get(`${ENDPOINTS.verifyUser}?email=${formik.values.email}`);
         const { success, data } = response.data;
-  
+        
         if (success) {
           setMessage({ type: "success", message: "User found" });
           formik.setFieldValue("user_id", data);
@@ -200,7 +217,7 @@ function Addstaff({ open, handleClose }) {
                 ? [{ value: "", text: "Loading branches..." }]
                 : branchError
                 ? [{ value: "", text: "Error loading branches" }]
-                : branch && branch.data.length > 0
+                : branch?.data?.length > 0
                 ? branch.data.map((item) => ({
                     value: item.id,
                     text: item.name,
@@ -215,8 +232,25 @@ function Addstaff({ open, handleClose }) {
                 ? formik.errors.branch_id
                 : null
             }
+            
           />
-
+          <InputCom
+          id="avatar"
+          name="avatar"
+          label="avatar"
+          defaultValue={formik.values.avatar}
+          onBlur={formik.handleBlur}
+          onChange={(event) => {
+            formik.setFieldValue("avatar", event.currentTarget.files[0]);
+          }}
+          type="file"
+          error={formik.touched.avatar && formik.errors.avatar ? true : false}
+          helperText={
+            formik.touched.avatar && formik.errors.avatar
+              ? formik.errors.avatar
+              : null
+          }
+          />
           {/* employee_email Input Component */}
           <InputCom
             id="email"
@@ -368,6 +402,21 @@ function Addstaff({ open, handleClose }) {
                 : null
             }
           />
+          <InputCom
+            id="nin"
+            name="nin"
+            label="NIN"
+            value={formik.values.nin}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="text"
+            error={formik.touched.nin && formik.errors.nin}
+            helperText={
+              formik.touched.nin && formik.errors.nin
+                ? formik.errors.nin
+                : null
+            }
+          />
           {/* job_description Input Component */}
           <InputCom
             id="job_description"
@@ -437,6 +486,26 @@ function Addstaff({ open, handleClose }) {
             helperText={
               formik.touched.work_type && formik.errors.work_type
                 ? formik.errors.work_type
+                : null
+            }
+          />
+           <SelectCom
+            id="gender"
+            name="gender"
+            value={formik.values.gender}
+            label="Gender"
+            options={[
+              { value: "male", text: "Male" },
+              { value: "female", text: "Female" },
+            ]}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.gender && formik.errors.gender
+            }
+            helperText={
+              formik.touched.gender && formik.errors.gender
+                ? formik.errors.gender
                 : null
             }
           />

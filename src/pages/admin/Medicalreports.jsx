@@ -14,34 +14,45 @@ import {
 import { Link as Linker } from "react-router-dom";
 import { Add, Business, Search } from "@mui/icons-material";
 import { useState } from "react";
-import Staffs from "../../Components/Staffs";
 import useCompany from "../../data/Company";
 import useBranch from "../../data/Branch";
-import Addstaff from "../../Components/Modals/AddStaffs"
+import MedicalReport from "../../Components/Medicalreports";
+import Addmedrec from "../../Components/Modals/Addmedrec";
 
-export default function Managestaffs() {
+export default function Managereport() {
   const [openModal, setOpenModal] = useState(false);
-  const [companydetail, setCompanydetail] = useState({org_id: null, branch_id: null});
-  const { data: companies, isLoading: companiesLoading, error: companiesError} = useCompany();
-  const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({ org_id: companydetail.org_id });
+  const [companydetail, setCompanydetail] = useState({
+    org_id: null,
+    branch_id: null,
+  });
+  const {
+    data: companies,
+    isLoading: companiesLoading,
+    error: companiesError,
+  } = useCompany();
+  const {
+    data: branch,
+    isLoading: branchLoading,
+    error: branchError,
+  } = useBranch({ org_id: companydetail.org_id });
 
   const handleAddSTaffs = (value) => {
     setOpenModal(value);
   };
 
   const renderUnits = () => {
-    // if (!companydetail.org_id && !companydetail.branch_id) {
-    //   return (
-    //     <Typography>Select a company and branch to view staffs</Typography>
-    //   );
-    // }
+    if (!companydetail.org_id ) {
+      return (
+        <Typography>Select a company and branch to view records</Typography>
+      );
+    }
 
-    return <Staffs  />;
+    return <MedicalReport companydetails={companydetail} />;
   };
 
   return (
     <Box sx={{ m: { xs: 0, sm: 0, md: 0, lg: 2, xl: 3 } }}>
-      <Typography sx={{ marginBottom: "20px" }}>Manage Staffs</Typography>
+      <Typography sx={{ marginBottom: "20px" }}>Manage Medical records</Typography>
       <Breadcrumbs aria-label="breadcrumb">
         <Link
           underline="hover"
@@ -52,7 +63,7 @@ export default function Managestaffs() {
         >
           Dashboard
         </Link>
-        <Typography sx={{ color: "text.primary" }}>Manage Staffs</Typography>
+        <Typography sx={{ color: "text.primary" }}>Manage Medical record</Typography>
       </Breadcrumbs>
       <Box
         sx={{
@@ -99,7 +110,6 @@ export default function Managestaffs() {
                     <Chip
                       key={company.id}
                       label={company.org_name}
-                      
                       icon={<Business />}
                       onClick={() =>
                         setCompanydetail({
@@ -133,33 +143,28 @@ export default function Managestaffs() {
                 <LinearProgress />
               </Box>
             )}
-              
-    
 
             <Grid container gap={2}>
-            {branch?.data?.length > 0 ? (
-  branch.data.map((branches) => (
-    <Chip
-      key={branches.id}
-      label={branches.name}
-      icon={<Business />}
-      onClick={() =>
-        setCompanydetail({
-          ...companydetail,
-          branch_id: branches.id,
-        })
-      }
-      color={
-        companydetail.branch_id === branches.id
-          ? "primary"
-          : "default"
-      }
-    />
-  ))
-) : (
-  !branchLoading && <div>{branchError?.message || "No branches found"}</div>
-)}
-
+              {branch?.data.length > 0
+                ? branch.data.map((branches) => (
+                    <Chip
+                      key={branches.id}
+                      label={branches.name}
+                      icon={<Business />}
+                      onClick={() =>
+                        setCompanydetail({
+                          ...companydetail,
+                          branch_id: branches.id,
+                        })
+                      }
+                      color={
+                        companydetail.branch_id === branches.id
+                          ? "primary"
+                          : "default"
+                      }
+                    />
+                  ))
+                : !branchLoading && <div>{branchError?.message}</div>}
             </Grid>
           </Box>
         </Box>
@@ -173,11 +178,11 @@ export default function Managestaffs() {
           variant="contained"
           onClick={() => handleAddSTaffs(true)}
         >
-          Add Staffs
+          Add Records
         </Button>
       </Box>
       {renderUnits()}
-      <Addstaff open={openModal} handleClose={() => handleAddSTaffs(false)} />
+      <Addmedrec open={openModal} handleClose={() => handleAddSTaffs(false)} />
     </Box>
   );
 }

@@ -3,65 +3,81 @@ import Navlinks from "../../Components/Navlinks";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
-export default function Adminside({setAside}) {
-const userRole = useSelector((state) => state.userDetails.user.user?.role);
-    const settingsSubMenu = [
-      { link: "/settings/general", name: "General", icon: <Build /> },
-      { link: "/settings/advanced", name: "Advanced", icon: <Tune /> },
-    ];
-    
-    const organizationSubMenu = [
-      {
-        link: `/${userRole}/manage-companies`,
-        name: "Manage Companies",
-        icon: <Home />,
-      },
-      {
-        link: `/${userRole}/manage-branches`,
-        name: "Manage Branches",
-        icon: <Home />,
-      },
-    ];
+export default function Adminside({ setAside }) {
+  const userRole = useSelector((state) => state.userDetails.user.user);
+  const userIndustry = useSelector((state) => state.userDetails.user.industry);
+  
+  console.log('User Role:', userRole);
+  console.log('User Industry:', userIndustry);
 
-    const eventSubMenu = [
-      {
-        link: `/${userRole}/manage-events`,
-        name: "Manage Events",
-        icon: <Event />,
-      },
-      {
-        link: `/${userRole}/manage-manifest`,
-        name: "Manage manifest",
-        icon: <Event />,
-      },
-      {
-        link: `/${userRole}/manage-attendee`,
-        name: "Manage Events Attendees",
-        icon: <People />,
-      },
-      {
-        link: `/${userRole}/Event attendees`,
-        name: "Bouncers",
-        icon: <Security />,
-      },
-    ];
+  const settingsSubMenu = [
+    { link: "/settings/general", name: "General", icon: <Build /> },
+    { link: "/settings/advanced", name: "Advanced", icon: <Tune /> },
+  ];
+  
+  const organizationSubMenu = [
+    {
+      link: `/${userRole.role}/manage-companies`,
+      name: "Manage Companies",
+      icon: <Home />,
+    },
+    {
+      link: `/${userRole.role}/manage-branches`,
+      name: "Manage Branches",
+      icon: <Home />,
+    },
+  ];
 
+  const eventSubMenu = [
+    {
+      link: `/${userRole.role}/manage-events`,
+      name: "Manage Events",
+      icon: <Event />,
+    },
+    {
+      link: `/${userRole.role}/manage-manifest`,
+      name: "Manage Manifest",
+      icon: <Event />,
+    },
+    {
+      link: `/${userRole.role}/manage-attendee`,
+      name: "Manage Events Attendees",
+      icon: <People />,
+    },
+    {
+      link: `/${userRole.role}/Event attendees`,
+      name: "Bouncers",
+      icon: <Security />,
+    },
+  ];
+
+  const medicalSubMenu = [
+    {
+      link: `/${userRole.role}/manage-records`,
+      name: "Manage Records",
+      icon: <Event />,
+    },
+    {
+      link: `/${userRole.role}/request-records`,
+      name: "Request for Medical Records",
+      icon: <People />,
+    },
+  ];
 
   return (
     <div>
       <Navlinks
-        link={`/${userRole}/dashboard`}
+        link={`/${userRole.role}/dashboard`}
         name="Dashboard"
         icon={<Home />}
         setAside={setAside}
       />
       <Navlinks
-        link={`/${userRole}/profile`}
+        link={`/${userRole.role}/profile`}
         name="Profile"
         icon={<HomeMax />}
         setAside={setAside}
       />
-    
       <Navlinks
         name="Organizations"
         subMenu={organizationSubMenu}
@@ -69,7 +85,7 @@ const userRole = useSelector((state) => state.userDetails.user.user?.role);
         setAside={setAside}
       />
       <Navlinks
-        link={`/${userRole}/manage-staffs`}
+        link={`/${userRole.role}/manage-staffs`}
         name="Manage Staffs"
         icon={<People />}
         setAside={setAside}
@@ -80,19 +96,28 @@ const userRole = useSelector((state) => state.userDetails.user.user?.role);
         icon={<Domain />}
         setAside={setAside}
       />
-    
       <Navlinks
-        link={`/${userRole}/crime-diary`}
+        link={`/${userRole.role}/crime-diary`}
         name="Crime Diary"
         icon={<VerifiedUser />}
         setAside={setAside}
       />
       <Navlinks
-        link={`/${userRole}/missing-persons`}
+        link={`/${userRole.role}/missing-persons`}
         name="Missing Persons"
         icon={<VerifiedUser />}
         setAside={setAside}
       />
+
+      {/* Render Medical Menu only for Healthcare or Pharmaceuticals */}
+      {(userIndustry === "healthcare" || userIndustry === "pharmaceuticals") && (
+        <Navlinks
+          name="Manage Medicals"
+          subMenu={medicalSubMenu}
+          icon={<Domain />}
+          setAside={setAside}
+        />
+      )}
         
       <Navlinks
         link="/"
@@ -112,4 +137,4 @@ const userRole = useSelector((state) => state.userDetails.user.user?.role);
 
 Adminside.propTypes = {
   setAside: PropTypes.any,
-}
+};

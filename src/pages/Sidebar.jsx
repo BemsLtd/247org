@@ -2,6 +2,7 @@ import { Box, Stack } from "@mui/material";
 import Logo from "/logo.png";
 import PropTypes from "prop-types";
 import { MenuOpen } from "@mui/icons-material";
+import { Typography, Divider } from "@mui/material";
 
 import Aside from "./Sidebar/Aside";
 
@@ -38,23 +39,30 @@ export default function Sidebar({ setAside }) {
           spacing={2}
           p={2}
         >
+        <Stack direction={'row'} spacing={1}>
           <img
             src={Logo}
             srcSet={Logo}
             alt="Logo"
             style={{
-              width: 70,
-              height: 70,
+              width: 50,
+              height: 50,
               borderRadius: "50%",
               objectFit: "cover",
             }}
             loading="lazy"
           />
+          <Typography variant="p" component="h3" sx={{ color: 'white' }}>
+            247 Security <br/><span style={{ color : 'lightgreen' }}>Dashboard</span>
+          </Typography>
+        </Stack>
+          
           <MenuOpen
             onClick={() => setAside("-500px")}
             sx={{ display: { sx: "block", md: "none" } }}
           />
         </Stack>
+        <Divider/>
         <Aside setAside={setAside} />
       </Box>
     </Box>

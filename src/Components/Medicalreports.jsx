@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 
 function MedicalReport({ companydetails }) {
   const { data: Staffs, isLoading, error,} = useStaffs({
-    company_id: companydetails.company_id,
+    org_id: companydetails.org_id,
     branch_id: companydetails.branch_id,
   });
   const [edit, setEdit] = useState(null);
@@ -20,9 +20,9 @@ function MedicalReport({ companydetails }) {
     console.log(".....");
   }
 
-  const rows = Staffs?.employees.map((data, i) => ({
+  const rows = Staffs?.data.map((data, i) => ({
     id: i + 1,
-    Itemid: data.employee_id,
+    Itemid: data.id,
     fullname: data.employee_firstname + " " + data.employee_lastname,
     role: data.job_role,
     email: data.employee_email,

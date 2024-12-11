@@ -72,7 +72,7 @@ export default function Login() {
         
       );
       
-      dispatch(updateUserDetails({ user })); // Save user details in the store
+      dispatch(updateUserDetails({ user: user })); // Save user details in the store
       navigate(`/${user.role}`, { replace: true }); // Redirect based on role
     } else {
       console.error("API returned error:", message);
