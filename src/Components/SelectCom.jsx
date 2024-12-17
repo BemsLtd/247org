@@ -28,11 +28,12 @@ export default function SelectCom({
           <em>None</em>
         </MenuItem>
        
-        {options.map(({ value, text }, i) => (
+        {options?.map(({ value, text }, i) => (
           <MenuItem key={i} value={value}>
             {text}
           </MenuItem>
         ))}
+
       </Select>
       {error && <FormHelperText error>{helperText}</FormHelperText>}
     </FormControl>

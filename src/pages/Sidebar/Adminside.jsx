@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 export default function Adminside({ setAside }) {
   const userRole = useSelector((state) => state.userDetails.user.user);
-  const userIndustry = useSelector((state) => state.userDetails.user.industry);
+  const userIndustry = useSelector((state) => state.userDetails.user.user.industry);
   
   console.log('User Role:', userRole);
   console.log('User Industry:', userIndustry);
@@ -24,6 +24,11 @@ export default function Adminside({ setAside }) {
     {
       link: `/${userRole.role}/manage-branches`,
       name: "Manage Branches",
+      icon: <Home />,
+    },
+    {
+      link: `/${userRole.role}/manage-units`,
+      name: "Manage Units",
       icon: <Home />,
     },
   ];
@@ -53,12 +58,12 @@ export default function Adminside({ setAside }) {
 
   const medicalSubMenu = [
     {
-      link: `/${userRole.role}/manage-records`,
+      link: `/${userRole.role}/medical-records`,
       name: "Manage Records",
       icon: <Event />,
     },
     {
-      link: `/${userRole.role}/request-records`,
+      link: `/${userRole.role}/request-report`,
       name: "Request for Medical Records",
       icon: <People />,
     },

@@ -136,30 +136,27 @@ export default function Managestaffs() {
               
     
 
-            <Grid container gap={2}>
-            {branch?.data?.length > 0 ? (
-  branch.data.map((branches) => (
-    <Chip
-      key={branches.id}
-      label={branches.name}
-      icon={<Business />}
-      onClick={() =>
-        setCompanydetail({
-          ...companydetail,
-          branch_id: branches.id,
-        })
-      }
-      color={
-        companydetail.branch_id === branches.id
-          ? "primary"
-          : "default"
-      }
-    />
-  ))
-) : (
-  !branchLoading && <div>{branchError?.message || "No branches found"}</div>
-)}
-
+              <Grid container gap={2}>
+              {branch?.data.length > 0
+                ? branch.data.map((branches) => (
+                    <Chip
+                      key={branches.id}
+                      label={branches.name}
+                      icon={<Business />}
+                      onClick={() =>
+                        setCompanydetail({
+                          ...companydetail,
+                          branch_id: branches.id,
+                        })
+                      }
+                      color={
+                        companydetail.branch_id === branches.id
+                          ? "primary"
+                          : "default"
+                      }
+                    />
+                  ))
+                : !branchLoading && <div>{branchError?.message}</div>}
             </Grid>
           </Box>
         </Box>

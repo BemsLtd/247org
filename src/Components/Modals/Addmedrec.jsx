@@ -183,7 +183,7 @@ function Addmedrec({ open, handleClose }) {
                 : companyError ||
                   (companies.companies && companies.companies.length === 0)
                 ? [{ value: "", text: "No companies available" }]
-                : companies.companies.map((item) => ({
+                : companies.data.map((item) => ({
                     value: item.id,
                     text: item.company_name,
                   }))

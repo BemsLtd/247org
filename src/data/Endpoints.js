@@ -69,5 +69,9 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     //Force
     getforce:"admin-panel/admin/organization/force/view",
     createforce: "admin-panel/admin/organization/force/create",
+
+    //Unit
+    createunit: "unit",
+    getunit: "unit"
     
   };

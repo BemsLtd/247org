@@ -11,6 +11,7 @@ const Managestaffs = lazy(() => import("../pages/admin/Managestaffs"));
 const Manageevents = lazy(() => import("../pages/admin/Manageevents"));
 const Manageattendee = lazy(() => import("../pages/admin/Manageattendee"));
 const Managebranches = lazy(() => import("../pages/admin/Managebranches"));
+const Manageunits = lazy(() => import("../pages/admin/Manageunits"));
 const ManageManifest = lazy(() => import("../pages/ManageManifest"));
 const Managereport = lazy(() => import("../pages/admin/Medicalreports"));
 const RequestReport = lazy(() => import("../pages/admin/Requestreport"));
@@ -48,8 +49,9 @@ export default function AdminRoute() {
           <Route path="/manage-events" element={<Manageevents />} />
           <Route path="/manage-attendees" element={<Manageattendee />} />
           <Route path="/manage-branches" element={<Managebranches />} />
+          <Route path="/manage-units" element={<Manageunits />} />
           <Route path="/manage-manifest" element={<ManageManifest />} />
-          <Route path="/medical-reports" element={<Managereport />} />
+          <Route path="/medical-records" element={<Managereport />} />
           <Route path="/request-report" element={<RequestReport />} />
           <Route path="/crime-diary" element={<Crimediary />} />
           <Route path="/missing-persons" element={<WantedPerson />} />
