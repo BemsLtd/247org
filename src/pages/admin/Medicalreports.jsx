@@ -22,8 +22,8 @@ import Addmedrec from "../../Components/Modals/Addmedrec";
 export default function Managereport() {
   const [openModal, setOpenModal] = useState(false);
   const [companydetail, setCompanydetail] = useState({
-    org_id: null,
-    branch_id: null,
+    org_id: "",
+    branch_id: "",
   });
   const {
     data: companies,
@@ -41,12 +41,20 @@ export default function Managereport() {
   };
 
   const renderUnits = () => {
-    if (!companydetail.org_id ) {
+    if (!companydetail.org_id || !companydetail.branch_id) {
       return (
         <Typography>Select a company and branch to view records</Typography>
       );
     }
-
+  
+    if (branchLoading || !branch?.data) {
+      return <Typography>Loading...</Typography>;
+    }
+  
+    if (branchError) {
+      return <Typography>Error: {branchError.message}</Typography>;
+    }
+  
     return <MedicalReport companydetails={companydetail} />;
   };
 
@@ -105,26 +113,25 @@ export default function Managereport() {
             )}
 
             <Grid container gap={2}>
-              {companies?.data.length > 0
-                ? companies.data.map((company) => (
-                    <Chip
-                      key={company.id}
-                      label={company.org_name}
-                      icon={<Business />}
-                      onClick={() =>
-                        setCompanydetail({
-                          ...companydetail,
-                          org_id: company.id,
-                        })
-                      }
-                      color={
-                        companydetail.org_id === company.id
-                          ? "primary"
-                          : "default"
-                      }
-                    />
-                  ))
-                : !companiesLoading && <div>{companiesError?.message}</div>}
+            {Array.isArray(companies?.data) && companies.data.length > 0
+  ? companies.data.map((company) => (
+      <Chip
+        key={company.id}
+        label={company.org_name}
+        icon={<Business />}
+        onClick={() =>
+          setCompanydetail({
+            ...companydetail,
+            org_id: company.id,
+          })
+        }
+        color={
+          companydetail.org_id === company.id ? "primary" : "default"
+        }
+      />
+    ))
+  : !companiesLoading && <div>{companiesError?.message || "No companies found"}</div>}
+
             </Grid>
           </Box>
           <Divider sx={{ marginTop: 2 }} />
@@ -145,26 +152,25 @@ export default function Managereport() {
             )}
 
             <Grid container gap={2}>
-              {branch?.data.length > 0
-                ? branch.data.map((branches) => (
-                    <Chip
-                      key={branches.id}
-                      label={branches.name}
-                      icon={<Business />}
-                      onClick={() =>
-                        setCompanydetail({
-                          ...companydetail,
-                          branch_id: branches.id,
-                        })
-                      }
-                      color={
-                        companydetail.branch_id === branches.id
-                          ? "primary"
-                          : "default"
-                      }
-                    />
-                  ))
-                : !branchLoading && <div>{branchError?.message}</div>}
+            {Array.isArray(branch?.data) && branch.data.length > 0
+  ? branch.data.map((branches) => (
+      <Chip
+        key={branches.id}
+        label={branches.name}
+        icon={<Business />}
+        onClick={() =>
+          setCompanydetail({
+            ...companydetail,
+            branch_id: branches.id,
+          })
+        }
+        color={
+          companydetail.branch_id === branches.id ? "primary" : "default"
+        }
+      />
+    ))
+  : !branchLoading && <div>{branchError?.message || "No branches found"}</div>}
+
             </Grid>
           </Box>
         </Box>

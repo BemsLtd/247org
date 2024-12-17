@@ -3,6 +3,7 @@ import { Button, CircularProgress, Stack } from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
+import endpoints2 from "../../data/endpoint2";
 import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -12,6 +13,8 @@ import SelectCom from "../SelectCom";
 import useCompany from "../../data/Company";
 // import useBranch from "../../data/Branch";
 import Textarea from "../Textarea";
+import makeAPIRequest2 from "../../data/endpoint2";
+import Omit from "../../Services/Omit";
 
 function Addmedrec({ open, handleClose }) {
    const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
@@ -20,14 +23,19 @@ function Addmedrec({ open, handleClose }) {
   const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object({
-    hospital_id: Yup.number()
+    org_id: Yup.number()
       .required("Company ID is required")
       .positive("Company ID must be a positive number"),
+    doctorId: Yup.number()
+      .required("Doc ID is required")
+      .positive("Doc ID must be a positive number"),
     // branch_id: Yup.string().nullable(),
+    user_id: Yup.string().nullable(),
     patient_email: Yup.string()
       .email("Must be a valid email")
       .required("Email is required"),
     diagnosis: Yup.string().required("Diagnosis is required"),
+
     treatment: Yup.string().required("Treatment is required"),
     medications: Yup.string().nullable(),
     notes: Yup.string().nullable(),
@@ -40,7 +48,9 @@ function Addmedrec({ open, handleClose }) {
 
   const formik = useFormik({
     initialValues: {
-      hospital_id: "",
+      org_id: "",
+      user_id: "",
+      doctorId: "",
       // branch_id: "",
       patient_email: "",
       address: "",
@@ -60,30 +70,24 @@ function Addmedrec({ open, handleClose }) {
     validationSchema,
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
-      const medicalrecord = {
-        hospital_id: values.hospital_id,
-        follow_up_date: values.follow_up_date,
-        patient_email: values.patient_email,
-        diagnosis: values.diagnosis,
-        treatment: values.treatment,
-        medications: values.medications,
-        notes: values.notes,
-        record_date: values.record_date,
-        discharge_date: values.discharge_date,
-      };
+      const medicalrecord = { 
+        org_id: formik.values.org_id,
+      doctorId: formik.values.doctorId,
+      // branch_id: formik.values.branch_id,
+      user_id: formik.values.user_id,
+      patient_email: formik.values.patient_email,
+      diagnosis: formik.values.diagnosis,
+      treatment: formik.values.treatment,
+      medications: formik.values.medications,
+      notes: formik.values.notes,
+      record_date: formik.values.record_date,
+      discharge_date: formik.values.discharge_date,
+      follow_up_date: formik.values.follow_up_date};
+      
       try {
-        if (adduser) {
-          await addUser(
-            values.first_name,
-            values.middle_name,
-            values.last_name,
-            values.patient_email,
-            values.phone,
-            values.address
-          );
-        }
+       
 
-        const res = await makeAPIRequest.post(
+        const res = await makeAPIRequest2.post(
           ENDPOINTS.addmedical,
           medicalrecord
         );
@@ -106,58 +110,64 @@ function Addmedrec({ open, handleClose }) {
     if (!formik.values.patient_email) {
       return;
     }
+    let timeoutId;
     const user = async () => {
       try {
         setLoading(true);
-        const response = await makeAPIRequest.post(ENDPOINTS.verifyUser, {
-          email: formik.values.patient_email,
-        });
-        const { success } = response.data;
+        const response = await makeAPIRequest.get(`${ENDPOINTS.verifyUser}?email=${formik.values.patient_email}`);
+        const { success, data } = response.data;
+        
         if (success) {
           setMessage({ type: "success", message: "User found" });
-          setLoading(false);
+          formik.setFieldValue("user_id", data);
           setAddUser(false);
         } else {
-          setLoading(false);
+          setMessage({ type: "error", message: "User not found" });
+          setAddUser(true);
         }
       } catch (error) {
-        setLoading(false);
         setMessage({ type: "error", message: error.message });
         setAddUser(true);
+      } finally {
+        setLoading(false);
       }
     };
-    user();
-    const IntervalId = setInterval(user(), 5000);
+    
+    
 
-    return () => clearInterval(IntervalId);
+    timeoutId = setTimeout(user, 500); // Debounce API call
+  
+    return () => clearTimeout(timeoutId); // Clear debounce timeout
   }, [formik.values.patient_email]);
 
-  const addUser = async (
-    first_name,
-    middle_name,
-    last_name,
-    email,
-    phone,
-    address
-  ) => {
-    await makeAPIRequest
-      .post(ENDPOINTS.minireg, {
-        first_name: first_name,
-        middle_name: middle_name,
-        last_name: last_name,
-        email: email,
-        phone: phone,
-        address: address,
-      })
-      .then((res) => {
-        const { success, message } = res.data;
-        if (success) {
-          setMessage({ type: "success", message: message });
-        } else {
-          setMessage({ type: "error", message: message });
-        }
-      });
-  };
+  
+
+  // const addUser = async (
+  //   first_name,
+  //   middle_name,
+  //   last_name,
+  //   email,
+  //   phone,
+  //   address
+  // ) => {
+  //   await makeAPIRequest
+  //     .post(ENDPOINTS.minireg, {
+  //       first_name: first_name,
+  //       middle_name: middle_name,
+  //       last_name: last_name,
+  //       email: email,
+  //       phone: phone,
+  //       address: address,
+  //     })
+  //     .then((res) => {
+  //       const { success, message } = res.data;
+  //       if (success) {
+  //         setMessage({ type: "success", message: message });
+  //       } else {
+  //         setMessage({ type: "error", message: message });
+  //       }
+  //     });
+  // };
 
   return (
     <ModalBox open={open} handleClose={handleClose}>
@@ -173,27 +183,27 @@ function Addmedrec({ open, handleClose }) {
         <Stack spacing={2}>
           {/* hospital_id Select Component */}
           <SelectCom
-            id="hospital_id"
-            name="hospital_id"
-            value={formik.values.hospital_id}
+            id="org_id"
+            name="org_id"
+            value={formik.values.org_id}
             label="Select Hospital"
             options={
               companyLoading
                 ? [{ value: "", text: "Loading companies..." }]
                 : companyError ||
-                  (companies.companies && companies.companies.length === 0)
+                  (companies.data && companies.data.length === 0)
                 ? [{ value: "", text: "No companies available" }]
                 : companies.data.map((item) => ({
                     value: item.id,
-                    text: item.company_name,
+                    text: item.org_name,
                   }))
             }
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
-            error={formik.touched.hospital_id && formik.errors.hospital_id}
+            error={formik.touched.org_id && formik.errors.org_id}
             helperText={
-              formik.touched.hospital_id && formik.errors.hospital_id
-                ? formik.errors.hospital_id
+              formik.touched.org_id && formik.errors.org_id
+                ? formik.errors.org_id
                 : null
             }
           />
@@ -330,17 +340,34 @@ function Addmedrec({ open, handleClose }) {
                 value={formik.values.address}
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
-                type="email"
+                type="text"
                 error={formik.touched.address && formik.errors.address}
                 helperText={
                   formik.touched.address && formik.errors.address
                     ? formik.errors.address
                     : null
                 }
-                endAdornmentIcon={loading && <CircularProgress size="30px" />}
+               
               />
             </>
           )}
+
+<InputCom
+                id="doctorId"
+                name="doctorId"
+                label="Doctor Id"
+                value={formik.values.doctorId}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="text"
+                error={formik.touched.doctorId && formik.errors.doctorId}
+                helperText={
+                  formik.touched.doctorId && formik.errors.doctorId
+                    ? formik.errors.doctorId
+                    : null
+                }
+               
+              />
 
           <Textarea
             id="diagnosis"

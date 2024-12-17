@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 
 
 import Bems_Hub from "./Bems_Hub";
@@ -25,3 +26,5 @@ export default MainIds;
 MainIds.propTypes = {
   company: PropTypes.any,
 };
+=======
+>>>>>>> Stashed changes

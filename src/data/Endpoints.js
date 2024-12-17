@@ -31,8 +31,9 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
 
     //medical
     update_medical: "user/update/medical-profile",
-    add_medical: "medical/record/create",
+    addmedical: "medical/record/create",
     update_medial2: "medical/record/update", 
+    getmedical: "medical/record/get",
 
 
 
@@ -60,7 +61,7 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     terminate: "ceo/company/employee/terminate",
     updateemployee: "ceo/company/employee/update",
 
-    addmedical: "medical/record/create",
+   
 
     addcrime: "user/crime-report/create",
     crime: "user/crime-report/view",
