@@ -27,6 +27,7 @@ function Addunits({ open, handleClose }) {
     name: Yup.string().required("Unit name is required"),
     address: Yup.string().required("Unit address is required"),
     phone: Yup.string().required("Unit phone number is required"),
+    avatar: Yup.mixed()
   });
 
   // Formik hook for handling form values and submission
@@ -37,18 +38,35 @@ function Addunits({ open, handleClose }) {
       name: "",
       address: "",
       phone: "",
-
+      avatar: null,
+      email: "",
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log("Submitting Unit Values:", values);
       try {
-        const response = await makeAPIRequest.post(ENDPOINTS.createunit, values);
+        const formData = new FormData();
+        formData.append("org_id", values.org_id);
+        formData.append("branch_id", values.branch_id);
+        formData.append("address", values.address);
+        formData.append("image", values.avatar);
+        formData.append("phone", values.phone);
+        formData.append("name", values.name);
+        formData.append("email", values.email);
+
+        const response = await makeAPIRequest.post(
+          ENDPOINTS.createunit,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         const { status, message } = response.data;
 
         if (status) {
           setMessage({ type: "success", message });
-          formik.resetForm(); // Reset form values after successful submission
+          formik.resetForm();
           handleClose();
         } else {
           setMessage({ type: "error", message });
@@ -60,7 +78,6 @@ function Addunits({ open, handleClose }) {
     },
   });
 
-  // Trigger branch fetching when company is selected
   useEffect(() => {
     if (formik.values.org_id) {
       const fetchBranches = async (orgId) => {
@@ -111,26 +128,58 @@ function Addunits({ open, handleClose }) {
           <SelectCom
             id="branch_id"
             name="branch_id"
-            label={branchLoading ? "Loading Branches..." : "Select Branch (Optional)"}
+            label={
+              branchLoading ? "Loading Branches..." : "Select Branch (Optional)"
+            }
             value={formik.values.branch_id}
             options={
               branchLoading
                 ? [{ value: "", text: "Loading branches..." }]
                 : branchError
                 ? [{ value: "", text: "Error loading branches" }]
-                
                 : branches?.data?.length > 0
                 ? branches?.data.map((branch) => ({
                     value: branch.id,
                     text: branch.name,
-                  })) 
-                  : [{ value: "", text: "No branches available" }]
+                  }))
+                : [{ value: "", text: "No branches available" }]
             }
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             disabled={branchLoading} // Disable until branches are loaded
             error={formik.touched.branch_id && formik.errors.branch_id}
             helperText={formik.touched.branch_id && formik.errors.branch_id}
+          />
+
+          <InputCom
+            id="avatar"
+            name="avatar"
+            label="avatar"
+            defaultValue={formik.values.avatar}
+            onBlur={formik.handleBlur}
+            onChange={(event) => {
+              formik.setFieldValue("avatar", event.currentTarget.files[0]);
+            }}
+            type="file"
+            error={formik.touched.avatar && formik.errors.avatar ? true : false}
+            helperText={
+              formik.touched.avatar && formik.errors.avatar
+                ? formik.errors.avatar
+                : null
+            }
+          />
+
+          {/* Unit phone Input */}
+          <InputCom
+            id="email"
+            name="email"
+            label="Unit email"
+            value={formik.values.email}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            type="mail"
+            error={formik.touched.email && formik.errors.email}
+            helperText={formik.touched.email && formik.errors.email}
           />
 
           {/* Unit Name Input */}
@@ -177,7 +226,11 @@ function Addunits({ open, handleClose }) {
             color="primary"
             disabled={formik.isSubmitting || message.type === "error"}
           >
-            {formik.isSubmitting ? <CircularProgress size={24} color="inherit" /> : "Add Unit"}
+            {formik.isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Add Unit"
+            )}
           </Button>
         </Stack>
       </form>

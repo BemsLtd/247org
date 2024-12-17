@@ -90,7 +90,6 @@ function Addstaff({ open, handleClose }) {
     onSubmit: async (values) => {
       setMessage({ type: "", message: null });
       const tosubmit = Omit(values);
-      console.log(tosubmit);
       try {
         const res = await makeAPIRequest.post(ENDPOINTS.addstaff, tosubmit);
         const { status, message } = res.data;

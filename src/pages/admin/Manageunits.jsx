@@ -5,27 +5,20 @@ import {
     Grid,
     Link,
     Typography,
-    useMediaQuery,
   } from "@mui/material";
-  import { Add } from "@mui/icons-material";
   import { useState } from "react";
   import { Link as Linker } from "react-router-dom";
   import SelectCom from "../../Components/SelectCom";
   import useCompany from "../../data/Company";
-  import useBranch from "../../data/Branch";
   import Units from "../../Components/Units";
   import Addunits from "../../Components/Modals/Addunits";
   
   function Manageunits() {
-    const {
-      data: companies,
-      isLoading: companyLoading,
-      error: companiesError,
-    } = useCompany();
+    const { data: companies, isLoading: companyLoading, error: companiesError} = useCompany();
     const [openModal, setOpenModal] = useState(false);
     const [companydetail, setCompanydetail] = useState({org_id: "", branch_id: ""});
-    const isSmallScreen = useMediaQuery("(max-width:600px)");
-    const { data: branch, isLoading: branchLoading, error: branchError} = useBranch({ org_id: companydetail.org_id });
+console.log(companydetail);
+
   
     const handleAddUnits = (value) => {
       setOpenModal(value);
@@ -57,85 +50,93 @@ import {
           </Link>
           <Typography sx={{ color: "text.primary" }}>Manage Units</Typography>
         </Breadcrumbs>
+
         <Box
           sx={{
-            display: { xs: "grid", md: "flex" },
-            justifyContent: { md: "space-between", xs: "start" },
+            display: "flex",
+            justifyContent: "space-between",
             marginBottom: "10px",
-            marginTop: "10px",
           }}
         >
-  
-          
-          <Grid container gap={2}>
-            <SelectCom
-              id="org_id"
-              name="org_id"
-              label="Select Company"
-              value={companydetail.org_id}
-              options={
-                companyLoading
-                  ? [{ value: "", text: "Loading companies..." }]
-                  : companiesError || (companies.data && companies.data.length === 0)
-                  ? [{ value: "", text: "No companies available" }]
-                  : companies.data.map((item) => ({
-                      value: item.id,
-                      text: item.org_name,
-                    }))
-              }
-              onBlur={() => {}}
-              onChange={(e) =>
-                setCompanydetail({
-                  ...companydetail,
-                  org_id: e.target.value,
-                })
-              }
-            />
-          </Grid>
-          <Grid container gap={2}>
-            <SelectCom
-              id="branch_id"
-              name="branch_id"
-              label={branchLoading ? "Loading Branches" : "Select Branch"}
-              value={companydetail.branch_id}
-              options={
-                branchLoading
-                  ? [{ value: "", text: "Loading branches..." }]
-                  : branchError || branch.data?.length === 0
-                  ? [{ value: "", text: "No branches available" }]
-                  : branch.data
-                      .filter((item) => item.organization.id === companydetail.org_id)
-                      .map((item) => ({
-                        value: String(item.id),
-                        text: item.name,
-                      }))
-              }
-              
-              onBlur={() => {}}
-              onChange={(e) =>
-                setCompanydetail({
-                  ...companydetail,
-                  branch_id: e.target.value,
-                })
-              }
-            />
-          </Grid>
-          <Button
-            startIcon={<Add />}
-            variant="contained"
+          {" "}
+          <Box
             sx={{
-              width: { xs: "50%", sm: "auto" },
-              
+              display: "flex",
+              justifyContent: "start",
+              gap: 1,
+              marginTop: 2,
+              paddingLeft: 3,
+              minWidth: 300,
             }}
+          >
+            <Grid container gap={2}>
+              <SelectCom
+                id="company_id"
+                name="company_id"
+                label="Select Company"
+                value={companydetail.org_id}
+                options={
+                  companyLoading
+                    ? [{ value: "", text: "Loading companies..." }]
+                    : companiesError ||
+                      (companies.data && companies.data.length === 0)
+                    ? [{ value: "", text: "No companies available" }]
+                    : companies.data.map((item) => ({
+                        value: String(item.id),
+                        text: item.org_name,
+                      }))
+                }
+                onBlur={() => {}}
+                onChange={(e) =>
+                  setCompanydetail({
+                    ...companydetail,
+                    org_id: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+            <Grid container gap={2}>
+              <SelectCom
+                id="branch_id"
+                name="branch_id"
+                label="Select Branch"
+                value={companydetail.branch_id}
+                options={
+                  companyLoading
+                    ? [{ value: "", text: "Loading branches..." }]
+                    : companiesError ||
+                      (companies.data && companies.data.length === 0)
+                    ? [{ value: "", text: "No branched available" }]
+                    : companies.data
+                        .filter(
+                          (item) => item.id == companydetail.org_id
+                        )[0]
+                        ?.branches?.map((item) => ({
+                          value: String(item.id),
+                          text: item.name,
+                        }))
+                }
+                onBlur={() => {}}
+                onChange={(e) =>
+                  setCompanydetail({
+                    ...companydetail,
+                    branch_id: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+          </Box>
+          <Button
+            // startIcon={<Add />}
+            variant="contained"
             onClick={() => handleAddUnits(true)}
           >
-            {isSmallScreen ? "aDD" : "Add Branch"}
+            Add Units
           </Button>
         </Box>
         <Grid container>
           <Grid item xs={12} md={12}>
-          {renderUnits()}
-            
+            {renderUnits()}
           </Grid>
         </Grid>
         {/* modal for adding properties */}
