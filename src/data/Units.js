@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import { useQuery } from "@tanstack/react-query"
 import makeAPIRequest from ".";
 import { ENDPOINTS } from "./Endpoints";
@@ -21,5 +20,3 @@ const useUnits = ({ companydetails = {} }) => {
 };
 
 export default useUnits
-=======
->>>>>>> Stashed changes

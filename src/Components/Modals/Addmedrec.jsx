@@ -3,7 +3,6 @@ import { Button, CircularProgress, Stack } from "@mui/material";
 import InputCom from "../InputCom";
 import PropTypes from "prop-types";
 import makeAPIRequest from "../../data";
-import endpoints2 from "../../data/endpoint2";
 import { ENDPOINTS } from "../../data/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -14,7 +13,7 @@ import useCompany from "../../data/Company";
 // import useBranch from "../../data/Branch";
 import Textarea from "../Textarea";
 import makeAPIRequest2 from "../../data/endpoint2";
-import Omit from "../../Services/Omit";
+
 
 function Addmedrec({ open, handleClose }) {
    const { data: companies, isLoading: companyLoading, error: companyError} = useCompany();
@@ -68,7 +67,7 @@ function Addmedrec({ open, handleClose }) {
       follow_up_date: "",
     },
     validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       setMessage({ type: "", message: null });
       const medicalrecord = { 
         org_id: formik.values.org_id,
