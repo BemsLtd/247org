@@ -3,6 +3,8 @@ import makeAPIRequest from ".";
 import { ENDPOINTS } from "./Endpoints";
 
 const useUnits = ({ companydetails = {} }) => {
+  // console.log("test", companydetails.org_id);
+  
   return useQuery({
     queryKey: ["Units", companydetails.org_id, companydetails.branch_id],
     queryFn: async () => {

@@ -45,7 +45,7 @@ function Units({ gridnum, pagination, companydetails }) {
     name: "",
     id: "",
     org_id: "",
-    image: null,
+    image: [],
     phone: "",
     address: "",
 
@@ -231,37 +231,38 @@ function Units({ gridnum, pagination, companydetails }) {
             />
           )}
           <Card sx={{ height: "100%" }}>
-            {formik.values.image.length < 2 && (
-              <CardMedia
-                component="img"
-                height="200"
-                image={
-                  formik.values?.image
-                    ? `${BASE_URL}uploads/${formik.values.image}`
-                    : "default_image_url" // Fallback image URL
-                }
-                alt={
-                  formik.values.unit_name?.alt_description ??
-                  "Default description" // Fallback alt text
-                }
-                style={{ objectFit: "cover" }}
-              />
-            )}
+          {formik.values.image && formik.values.image.length < 2 && (
+          <CardMedia
+            component="img"
+            height="200"
+            image={
+      formik.values?.image
+        ? `${BASE_URL}uploads/${formik.values.image}`
+        : "default_image_url"
+    }
+    alt={
+      formik.values.unit_name?.alt_description ?? "Default description"
+    }
+    style={{ objectFit: "cover" }}
+  />
+)}
+
 
             {/* Carousel for Multiple Images */}
-            {formik.values.image.length > 1 && (
+            {formik.values.image && formik.values.image.length > 1 && (
               <Carousel>
-                {formik.values.image.map((file, index) => (
-                  <Paper key={index}>
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`preview-${index}`}
-                      width="100%"
-                      style={{ maxHeight: "400px", objectFit: "cover" }} // Adjust maxHeight based on your layout
-                    />
-                  </Paper>
-                ))}
-                {/* NextIcon={<ArrowForward />}
+                {Array.isArray(formik.values.image) &&
+                  formik.values.image.map((file, index) => (
+                    <Paper key={index}>
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`preview-${index}`}
+                        width="100%"
+                        style={{ maxHeight: "400px", objectFit: "cover" }}
+                      />
+                    </Paper>
+                  ))}
+                                {/* NextIcon={<ArrowForward />}
                 PrevIcon={<ArrowBack />} */}
               </Carousel>
             )}
