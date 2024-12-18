@@ -5,9 +5,9 @@ import Irenose_Devs from "./Irenose_Devs";
 import "./src/input.css";
 import "./src/output.css";
 import PropTypes from "prop-types";
-import ZENITH from "./ZENITH";
-import GTB from "./GTB.tsx";
-import NBA from "./NBA";
+// import ZENITH from "./ZENITH";
+// import GTB from "./GTB.tsx";
+// import NBA from "./NBA";
 
 function MainIds({company}) {
 
