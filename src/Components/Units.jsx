@@ -86,7 +86,7 @@ function Units({ gridnum, pagination, companydetails }) {
         formData.append("image", file);
       });
       try {
-        await makeAPIRequest.put(ENDPOINTS.updateunits, formData);
+        await makeAPIRequest.put(ENDPOINTS.createunit, formData);
         setMessage({ type: "success", message: "Unit updated successfully" });
         handleClose();
       } catch (error) {
@@ -225,142 +225,152 @@ function Units({ gridnum, pagination, companydetails }) {
         />
       )}
 
-      {editUnits && (
-        <ModalBox open={openModal} handleClose={handleClose}>
-          <h2>Edit Branch</h2>
-          {message.message && (
-            <Notice
-              message={message.message}
-              status={message.type}
-              onClose={handleClose}
-            />
-          )}
-          <Card sx={{ height: "100%" }}>
-          {formik.values.image && formik.values.image.length < 2 && (
-          <CardMedia
-            component="img"
-            height="200"
-            image={
-      formik.values?.image
-        ? `${BASE_URL}uploads/${formik.values.image}`
-        : "default_image_url"
-    }
-    alt={
-      formik.values.unit_name?.alt_description ?? "Default description"
-    }
-    style={{ objectFit: "cover" }}
-  />
-)}
-
-
-            {/* Carousel for Multiple Images */}
-            {formik.values.image && formik.values.image.length > 1 && (
-              <Carousel>
-                {Array.isArray(formik.values.image) &&
-                  formik.values.image.map((file, index) => (
-                    <Paper key={index}>
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`preview-${index}`}
-                        width="100%"
-                        style={{ maxHeight: "400px", objectFit: "cover" }}
-                      />
-                    </Paper>
-                  ))}
-                                {/* NextIcon={<ArrowForward />}
-                PrevIcon={<ArrowBack />} */}
-              </Carousel>
+{editUnits && (
+  <ModalBox open={openModal} handleClose={handleClose}>
+    <h2>Edit Branch</h2>
+    {message.message && (
+      <Notice
+        message={message.message}
+        status={message.type}
+        onClose={handleClose}
+      />
+    )}
+    <Card sx={{ height: "100%" }}>
+      <CardContent>
+        <Stack spacing={2}>
+          {/* Image Upload Section */}
+          <div
+            {...getRootProps()}
+            style={{
+              border: isDragActive ? "2px dashed #2196f3" : "2px dashed #cccccc",
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: isDragActive ? "rgba(33, 150, 243, 0.1)" : "transparent",
+            }}
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Drop the files here...</p>
+            ) : (
+              <p>Drag & drop image here, or click to select file</p>
             )}
-            <CardContent>
-              <Stack spacing={2}>
-                <div
-                  {...getRootProps()}
-                  style={{
-                    border: "2px dashed #cccccc",
-                    padding: "20px",
-                    textAlign: "center",
-                  }}
-                >
-                  <input {...getInputProps({ id: "image", name: "image" })} />
-                  {isDragActive ? (
-                    <p>Drop the files here...</p>
-                  ) : (
-                    <p>Drag & drop some files here, or click to select files</p>
-                  )}
-                </div>
-                <SelectCom
-                  id="org_id"
-                  name="org_id"
-                  value={formValues.org_id}
-                  label="Select Company"
-                  options={
-                    companyLoading
-                      ? [{ value: "", text: "Loading companies..." }]
-                      : companies.data?.length
-                      ? companies.data.map((item) => ({
-                          value: String(item.id),
-                          text: item.org_name,
-                        }))
-                      : [{ value: "", text: "No companies available" }]
-                  }
-                  onBlur={formik.handleBlur}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      org_name: e.target.value,
-                    })
-                  }
-                  error={formik.touched.org_id && formik.errors.org_id}
-                  helperText={
-                    formik.touched.org_id && formik.errors.org_id
-                      ? formik.errors.org_id
-                      : null
-                  }
-                />
-                <InputCom
-                  id="name"
-                  label="branch Name"
-                  type="text"
-                  value={formValues.name}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      name: e.target.value,
-                    })
-                  }
-                />
+          </div>
 
-                <InputCom
-                  id="address"
-                  label="branch Address"
-                  type="text"
-                  value={formValues.address}
-                  onChange={(e) =>
-                    setFormValues({
-                      ...formValues,
-                      address: e.target.value,
-                    })
-                  }
-                />
-              </Stack>
-            </CardContent>
-            <CardActions
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<Save />}
-                onClick={formik.handleSubmit}
-              >
-                Save
-              </Button>
-            </CardActions>
-          </Card>
+          {/* Image Preview Section */}
+          {(formik.values.image || formValues.image) && (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+              {/* Existing images from server */}
+              {typeof formValues.image === 'string' && (
+                <Paper sx={{ position: 'relative', width: 200, height: 200 }}>
+                  <img
+                    src={`${BASE_URL}uploads/${formValues.image}`}
+                    alt="Existing Unit Image"
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover' 
+                    }}
+                  />
+                  <Button
+                    color="error"
+                    variant="contained"
+                    size="small"
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 5, 
+                      right: 5,
+                      minWidth: 'auto',
+                      padding: '4px 8px'
+                    }}
+                    onClick={() => {
+                      setFormValues(prev => ({ ...prev, image: null }));
+                      formik.setFieldValue("image", []);
+                    }}
+                  >
+                    X
+                  </Button>
+                </Paper>
+              )}
 
-          {}
-        </ModalBox>
-      )}
+              {/* Newly uploaded files */}
+              {formik.values.image && formik.values.image.map((file, index) => (
+                <Paper key={index} sx={{ position: 'relative', width: 200, height: 200 }}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`preview-${index}`}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover' 
+                    }}
+                  />
+                  <Button
+                    color="error"
+                    variant="contained"
+                    size="small"
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 5, 
+                      right: 5,
+                      minWidth: 'auto',
+                      padding: '4px 8px'
+                    }}
+                    onClick={() => {
+                      const newFiles = formik.values.image.filter((_, i) => i !== index);
+                      formik.setFieldValue("image", newFiles);
+                    }}
+                  >
+                    X
+                  </Button>
+                </Paper>
+              ))}
+            </Box>
+          )}
+
+          {/* Input Fields */}
+          <InputCom
+            id="name"
+            label="Branch Name"
+            type="text"
+            value={formValues.name}
+            onChange={(e) =>
+              setFormValues({
+                ...formValues,
+                name: e.target.value,
+              })
+            }
+          />
+
+          <InputCom
+            id="address"
+            label="Branch Address"
+            type="text"
+            value={formValues.address}
+            onChange={(e) =>
+              setFormValues({
+                ...formValues,
+                address: e.target.value,
+              })
+            }
+          />
+        </Stack>
+      </CardContent>
+
+      {/* Card Actions with Save Button */}
+      <CardActions sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Save />}
+          onClick={formik.handleSubmit}
+          fullWidth
+        >
+          Save Changes
+        </Button>
+      </CardActions>
+    </Card>
+  </ModalBox>
+)}
     </Box>
   );
 }

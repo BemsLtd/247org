@@ -41,7 +41,7 @@ const Routeauth = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       const token = localStorage.getItem("247_token");
-console.log("Token:", token);
+
 
 
       try {
