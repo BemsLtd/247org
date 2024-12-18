@@ -31,13 +31,13 @@ import useCompany from "../data/Company";
 function Units({ gridnum, pagination, companydetails }) {
   const [page, setPage] = useState(1);
   const [message, setMessage] = useState({ status: "", message: null });
-  const { data: units, isLoading, error } = useUnits({ companydetails: companydetails || {} });
+  const { data: Units, isLoading, error } = useUnits( {companydetails} );
 
-  useEffect(() => {
-    if (units) {
-      console.log("Fetched Units Data:", units);
-    }
-  }, [units]);
+  // useEffect(() => {
+  //   if (units) {
+  //     console.log("Fetched Units Data:", units);
+  //   }
+  // }, [units]);
   const { data: companies, isLoading: companyLoading } = useCompany();
   const [openModal, setOpenModal] = useState(false);
   const [editUnits, setEditUnits] = useState(null);
@@ -75,7 +75,7 @@ function Units({ gridnum, pagination, companydetails }) {
 
   const formik = useFormik({
     initialValues: formValues,
-    enableReinitialize: true, // Allows formik to reset values when formValues change
+    enableReinitialize: true,
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append("phone", values.phone);
@@ -124,97 +124,102 @@ function Units({ gridnum, pagination, companydetails }) {
     <Box>
       <Grid container spacing={2}>
         {error && <Typography color="error">{error.message}</Typography>}
-        {(isLoading ? Array.from(new Array(10)) : Units?.data || []).map((item, i) => (
-  <Grid item xs={12} sm={gridnum} key={item?.id ?? `loading-${i}`}>
-    {/* Use a unique key */}
-    <Card sx={{ height: "100%" }}>
-      {isLoading ? (
-        <Skeleton variant="rectangular" height={200} />
-      ) : (
-        <Carousel>
-          {typeof item.image === "string" && item.image.startsWith("[") ? (
-            JSON.parse(item?.image).map((file, index) => (
-              <Paper key={index}>
-                <img
-                  src={file}
-                  alt={`preview-${index}`}
-                  width="100%"
-                  style={{
-                    maxHeight: "300px",
-                    minHeight: "250px",
-                    objectFit: "cover",
-                  }}
-                />
-              </Paper>
-            ))
-          ) : (
-            <Paper>
-              <img
-                src={item.image}
-                alt={`preview-single`}
-                width="100%"
-                style={{
-                  maxHeight: "300px",
-                  minHeight: "250px",
-                  objectFit: "cover",
-                }}
-              />
-            </Paper>
-          )}
-        </Carousel>
-      )}
-      <CardContent>
-        {isLoading ? (
-          <>
-            <Skeleton animation="wave" height={30} width="80%" />
-            <Skeleton animation="wave" height={20} width="60%" />
-          </>
-        ) : (
-          <>
-            <Typography gutterBottom variant="h6" component="div">
-              {item?.name?.length > 30
-                ? `${item.name.substr(0, 25)}...`
-                : item?.name ?? "247 Building"}
-            </Typography>
-            <Typography variant="body2" color="text.error">
-              Address: {item?.address ?? "Unknown"}
-            </Typography>
-            <Typography variant="body2" color="text.error">
-              Branch: {item?.branch?.name ?? "Unknown"}
-            </Typography>
-          </>
+        {Units?.error && <Typography color="error">{Units.error}</Typography>}
+        {(isLoading ? Array.from(new Array(10)) : Units?.data || []).map(
+          (item, i) => (
+            <Grid item xs={12} sm={gridnum ?? 4} key={item?.id ?? `loading-${i}`}>
+              {/* Use a unique key */}
+              <Card sx={{ height: "100%" }}>
+                {isLoading ? (
+                  <Skeleton variant="rectangular" height={200} />
+                ) : (
+                  <Carousel>
+                    {typeof item.image === "string" &&
+                    item.image.startsWith("[") ? (
+                      JSON.parse(item?.image).map((file, index) => (
+                        <Paper key={index}>
+                          <img
+                            src={file}
+                            alt={`preview-${index}`}
+                            width="100%"
+                            style={{
+                              maxHeight: "300px",
+                              minHeight: "250px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </Paper>
+                      ))
+                    ) : (
+                      <Paper>
+                        <img
+                          src={item.image}
+                          alt={`preview-single`}
+                          width="100%"
+                          style={{
+                            maxHeight: "300px",
+                            minHeight: "250px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </Paper>
+                    )}
+                  </Carousel>
+                )}
+                <CardContent>
+                  {isLoading ? (
+                    <>
+                      <Skeleton animation="wave" height={30} width="80%" />
+                      <Skeleton animation="wave" height={20} width="60%" />
+                    </>
+                  ) : (
+                    <>
+                      <Typography gutterBottom variant="h6" component="div">
+                        {item?.name?.length > 30
+                          ? `${item.name.substr(0, 25)}...`
+                          : item?.name ?? "247 Building"}
+                      </Typography>
+                      <Typography variant="body2" color="text.error">
+                        Address: {item?.address ?? "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" color="text.error">
+                        Branch: {item?.branch?.name ?? "Unknown"}
+                      </Typography>
+                    </>
+                  )}
+                </CardContent>
+                <CardActions
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<Visibility />}
+                    disabled={isLoading}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleOpen(item)}
+                    size="small"
+                    startIcon={<Edit />}
+                    color="warning"
+                    disabled={isLoading}
+                  >
+                    Edit
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          )
         )}
-      </CardContent>
-      <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<Visibility />}
-          disabled={isLoading}
-        >
-          View
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => handleOpen(item)}
-          size="small"
-          startIcon={<Edit />}
-          color="warning"
-          disabled={isLoading}
-        >
-          Edit
-        </Button>
-      </CardActions>
-    </Card>
-  </Grid>
-))}
-
       </Grid>
 
-      {pagination && units && !isLoading && (
+      {pagination && Units && !isLoading && (
         <Pagination
           sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
-          count={units.total_pages}
+          count={Units.total_pages}
           page={page}
           onChange={handleChange}
         />
@@ -292,15 +297,11 @@ function Units({ gridnum, pagination, companydetails }) {
                     companyLoading
                       ? [{ value: "", text: "Loading companies..." }]
                       : companies.data?.length
-        ? companies.data.map((item) => ({
-            value: String(item.id),
-            text: item.org_name,
-          }))
-        : [{ value: "", text: "No companies available" }]
-      
-      
-      
-      
+                      ? companies.data.map((item) => ({
+                          value: String(item.id),
+                          text: item.org_name,
+                        }))
+                      : [{ value: "", text: "No companies available" }]
                   }
                   onBlur={formik.handleBlur}
                   onChange={(e) =>
@@ -321,7 +322,8 @@ function Units({ gridnum, pagination, companydetails }) {
                   label="branch Name"
                   type="text"
                   value={formValues.name}
-                  onChange={(e) => setFormValues({
+                  onChange={(e) =>
+                    setFormValues({
                       ...formValues,
                       name: e.target.value,
                     })
@@ -356,8 +358,7 @@ function Units({ gridnum, pagination, companydetails }) {
             </CardActions>
           </Card>
 
-{          }
-
+          {}
         </ModalBox>
       )}
     </Box>
