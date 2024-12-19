@@ -8,7 +8,7 @@ import {
   Pagination,
   Skeleton,
   Stack, 
-  CardMedia,
+  // CardMedia,
   Paper,
   Typography,
 } from "@mui/material";
@@ -20,13 +20,13 @@ import InputCom from "./InputCom";
 import { BASE_URL, ENDPOINTS } from "../data/Endpoints";
 import makeAPIRequest from "../data";
 
-import SelectCom from "./SelectCom";
+// import SelectCom from "./SelectCom";
 import Carousel from "react-material-ui-carousel";
 import Notice from "./Notice";
 import useUnits from "../data/Units";
 import { useDropzone } from "react-dropzone";
 import { useFormik } from "formik";
-import useCompany from "../data/Company";
+// import useCompany from "../data/Company";
 
 function Units({ gridnum, pagination, companydetails }) {
   const [page, setPage] = useState(1);
@@ -38,7 +38,7 @@ function Units({ gridnum, pagination, companydetails }) {
   //     console.log("Fetched Units Data:", units);
   //   }
   // }, [units]);
-  const { data: companies, isLoading: companyLoading } = useCompany();
+  // const { data: companies, isLoading: companyLoading } = useCompany();
   const [openModal, setOpenModal] = useState(false);
   const [editUnits, setEditUnits] = useState(null);
   const [formValues, setFormValues] = useState({

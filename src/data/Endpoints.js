@@ -2,7 +2,8 @@ export const TOKEN_KEY = "247_token";
 export const TOKEN_KEY2 = "247_token_user";
 
 export const BASE_URL =
-import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.com/api/";
+// import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.com/api/";
+import.meta.env.VITE_API_BASE || "https://lenient-growing-colt.ngrok-free.app/api/";
   // import.meta.env.VITE_API_BASE || "http://localhost:5000/api/";
 
   export const BASE_URL2 =
@@ -62,7 +63,7 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     updateemployee: "ceo/company/employee/update",
 
    
-
+  
     addcrime: "user/crime-report/create",
     crime: "user/crime-report/view",
     update_crime: "user/crime-report/update",
