@@ -4,90 +4,95 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardMedia,
-  FormControlLabel,
   Grid,
   Pagination,
-  Paper,
   Skeleton,
-  Stack,
-  Switch,
+  Stack, 
+  // CardMedia,
+  Paper,
   Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { Edit, Save, Visibility } from "@mui/icons-material";
 import ModalBox from "./Modal";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InputCom from "./InputCom";
-import SelectCom from "./SelectCom";
 import { BASE_URL, ENDPOINTS } from "../data/Endpoints";
-import useUnits from "../data/Units";
-import { Link } from "react-router-dom";
 import makeAPIRequest from "../data";
-import { useFormik } from "formik";
-import Notice from "./Notice";
-import { useDropzone } from "react-dropzone";
+
+// import SelectCom from "./SelectCom";
 import Carousel from "react-material-ui-carousel";
+import Notice from "./Notice";
+import useUnits from "../data/Units";
+import { useDropzone } from "react-dropzone";
+import { useFormik } from "formik";
+// import useCompany from "../data/Company";
 
-function Units({ gridnum, pagination, property_id }) {
+function Units({ gridnum, pagination, companydetails }) {
   const [page, setPage] = useState(1);
-  const [message, setMessage] = useState({ status: null, message: null });
-  const { data: Units, isLoading, error } = useUnits({ property_id });
+  const [message, setMessage] = useState({ status: "", message: null });
+  const { data: Units, isLoading, error } = useUnits( {companydetails} );
 
+  // useEffect(() => {
+  //   if (units) {
+  //     console.log("Fetched Units Data:", units);
+  //   }
+  // }, [units]);
+  // const { data: companies, isLoading: companyLoading } = useCompany();
   const [openModal, setOpenModal] = useState(false);
+  const [editUnits, setEditUnits] = useState(null);
+  const [formValues, setFormValues] = useState({
+    name: "",
+    id: "",
+    org_id: "",
+    image: [],
+    phone: "",
+    address: "",
 
-  const [editUnit, setEditUnit] = useState(null);
+  });
 
   const handleChange = (event, value) => {
     setPage(value);
   };
 
-  const handleOpen = (property) => {
-    setEditUnit(property);
-    formik.setValues({
-      unit_id: property.id,
-      unit_number: property.unit_number,
-      avaliability: property.avaliability,
-      type: property.type, // assuming type comes from property
-      image: Array.isArray(property.unit_image)
-        ? property.unit_image
-        : [property.unit_image],
+  const handleOpen = (unit) => {
+    setEditUnits(unit);
+    setFormValues({
+      id: unit.id,
+      org_id: unit.org_id,
+      address: unit.address,
+      name: unit.name,
+      phone: unit.phone,
+      image: unit.image || null, // Add fallback for image
     });
     setOpenModal(true);
   };
 
   const handleClose = () => {
-    setEditUnit(null);
+    setEditUnits(null);
     setOpenModal(false);
   };
 
   const formik = useFormik({
-    initialValues: {
-      unit_id: "",
-      unit_number: "",
-      avaliability: false,
-      type: "",
-      image: [],
-    },
+    initialValues: formValues,
+    enableReinitialize: true,
     onSubmit: async (values) => {
       const formData = new FormData();
-      formData.append("unit_id", values.unit_id);
-      formData.append("avaliability", values.avaliability);
-      formData.append("type", values.type);
-      formData.append("unit_number", values.unit_number);
+      formData.append("phone", values.phone);
+      formData.append("id", values.id);
+      formData.append("name", values.name);
+      formData.append("address", values.address);
       values.image.forEach((file) => {
-        formData.append(`image`, file);
+        formData.append("image", file);
       });
       try {
-        await makeAPIRequest.post(ENDPOINTS.editunit, values);
-        setMessage({ type: "success", message: message });
-        setEditUnit(null);
+        await makeAPIRequest.put(ENDPOINTS.createunit, formData);
+        setMessage({ type: "success", message: "Unit updated successfully" });
         handleClose();
       } catch (error) {
-        console.error("Failed to save Unit:", error);
-        setMessage({ type: "success", message: "Failed to save Unit" });
+        console.error("Failed to save unit:", error);
+        setMessage({ type: "error", message: "Failed to save unit" });
       }
-      console.log(values);
     },
   });
 
@@ -99,111 +104,116 @@ function Units({ gridnum, pagination, property_id }) {
     [formik]
   );
 
+  useEffect(() => {
+    formik.setFieldValue("phone", formValues.phone);
+    formik.setFieldValue("address", formValues.address);
+    formik.setFieldValue("id", formValues.id);
+    formik.setFieldValue("org_id", formValues.org_id);
+    formik.setFieldValue("name", formValues.name);
+  }, [formValues]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
-    accept: {
-      "image/jpeg": [],
-      "image/jpg": [],
-      "image/png": [],
-    },
+    multiple: false,
+    accept: { "image/jpeg": [], "image/jpg": [], "image/png": [] },
   });
 
-  console.log(formik.values.image.length);
 
-  if (error) return <div>Error: {error.response?.data?.message}</div>;
-
+  if (error) return <div>Error: {error.message}</div>;
   return (
     <Box>
       <Grid container spacing={2}>
         {error && <Typography color="error">{error.message}</Typography>}
-        {(isLoading
-          ? Array.from(new Array(10))
-          : Units?.property_units || []
-        ).map((item, i) => (
-          <Grid item xs={12} sm={gridnum} key={item?.id ?? `loading-${i}`}>
-            {" "}
-            {/* Use a unique key */}
-            <Card sx={{ height: "100%" }}>
-              {isLoading ? (
-                <Skeleton variant="rectangular" height={200} />
-              ) : (
-                <>
-                  {item.unit_image && (
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={
-                        item?.unit_image
-                          ? `${BASE_URL}uploads/${item.unit_image}` // Access the first image
-                          : "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      }
-                      alt={item?.name ?? "Default description"}
-                      style={{ objectFit: "cover" }}
-                    />
-                  )}
-
-                  {/* {item.unit_image.length > 1 && (
-                    <Carousel>
-                      {item.unit_image.map((file, index) => (
+        {Units?.error && <Typography color="error">{Units.error}</Typography>}
+        {(isLoading ? Array.from(new Array(10)) : Units?.data || []).map(
+          (item, i) => (
+            <Grid item xs={12} sm={gridnum ?? 4} key={item?.id ?? `loading-${i}`}>
+              {/* Use a unique key */}
+              <Card sx={{ height: "100%" }}>
+                {isLoading ? (
+                  <Skeleton variant="rectangular" height={200} />
+                ) : (
+                  <Carousel>
+                    {typeof item.image === "string" &&
+                    item.image.startsWith("[") ? (
+                      JSON.parse(item?.image).map((file, index) => (
                         <Paper key={index}>
                           <img
-                            src={`${BASE_URL}uploads/${file}`} 
+                            src={file}
                             alt={`preview-${index}`}
                             width="100%"
-                            style={{ maxHeight: "400px", objectFit: "cover" }}
+                            style={{
+                              maxHeight: "300px",
+                              minHeight: "250px",
+                              objectFit: "cover",
+                            }}
                           />
                         </Paper>
-                      ))}
-                    </Carousel>
-                  )} */}
-                </>
-              )}
-
-              <CardContent>
-                {isLoading ? (
-                  <>
-                    <Skeleton animation="wave" height={30} width="80%" />
-                    <Skeleton animation="wave" height={20} width="60%" />
-                  </>
-                ) : (
-                  <>
-                    <Typography gutterBottom variant="h6" component="div">
-                      {item?.name?.length > 30
-                        ? `${item.name.substr(0, 25)}...`
-                        : item?.name ?? "247 Building"}
-                    </Typography>
-                    <Typography variant="body2" color="text.error">
-                      Unit Number: {item?.unit_number ?? "Unknown"}
-                    </Typography>
-                  </>
+                      ))
+                    ) : (
+                      <Paper>
+                        <img
+                          src={item.image}
+                          alt={`preview-single`}
+                          width="100%"
+                          style={{
+                            maxHeight: "300px",
+                            minHeight: "250px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </Paper>
+                    )}
+                  </Carousel>
                 )}
-              </CardContent>
-              <CardActions
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<Visibility />}
-                  disabled={isLoading}
+                <CardContent>
+                  {isLoading ? (
+                    <>
+                      <Skeleton animation="wave" height={30} width="80%" />
+                      <Skeleton animation="wave" height={20} width="60%" />
+                    </>
+                  ) : (
+                    <>
+                      <Typography gutterBottom variant="h6" component="div">
+                        {item?.name?.length > 30
+                          ? `${item.name.substr(0, 25)}...`
+                          : item?.name ?? "247 Building"}
+                      </Typography>
+                      <Typography variant="body2" color="text.error">
+                        Address: {item?.address ?? "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" color="text.error">
+                        Branch: {item?.branch?.name ?? "Unknown"}
+                      </Typography>
+                    </>
+                  )}
+                </CardContent>
+                <CardActions
+                  sx={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  View
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => handleOpen(item)}
-                  size="small"
-                  startIcon={<Edit />}
-                  color="warning"
-                  disabled={isLoading}
-                >
-                  Edit
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<Visibility />}
+                    disabled={isLoading}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleOpen(item)}
+                    size="small"
+                    startIcon={<Edit />}
+                    color="warning"
+                    disabled={isLoading}
+                  >
+                    Edit
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          )
+        )}
       </Grid>
 
       {pagination && Units && !isLoading && (
@@ -215,126 +225,152 @@ function Units({ gridnum, pagination, property_id }) {
         />
       )}
 
-      {editUnit && (
-        <ModalBox open={openModal} handleClose={handleClose}>
-          <h2>Edit Unit</h2>
-          {message.message && (
-            <Notice
-              message={message.message}
-              status={message.type}
-              onClose={handleClose}
-            />
-          )}
-          <Card>
-            {formik.values.image.length < 2 && (
-              <CardMedia
-                component="img"
-                height="200"
-                image={
-                  formik.values?.image
-                    ? `${BASE_URL}uploads/${formik.values.image}`
-                    : "default_image_url" // Fallback image URL
-                }
-                alt={
-                  formik.values.unit_name?.alt_description ??
-                  "Default description" // Fallback alt text
-                }
-                style={{ objectFit: "cover" }}
-              />
+{editUnits && (
+  <ModalBox open={openModal} handleClose={handleClose}>
+    <h2>Edit Branch</h2>
+    {message.message && (
+      <Notice
+        message={message.message}
+        status={message.type}
+        onClose={handleClose}
+      />
+    )}
+    <Card sx={{ height: "100%" }}>
+      <CardContent>
+        <Stack spacing={2}>
+          {/* Image Upload Section */}
+          <div
+            {...getRootProps()}
+            style={{
+              border: isDragActive ? "2px dashed #2196f3" : "2px dashed #cccccc",
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: isDragActive ? "rgba(33, 150, 243, 0.1)" : "transparent",
+            }}
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <p>Drop the files here...</p>
+            ) : (
+              <p>Drag & drop image here, or click to select file</p>
             )}
+          </div>
 
-            {/* Carousel for Multiple Images */}
-            {formik.values.image.length > 1 && (
-              <Carousel>
-                {formik.values.image.map((file, index) => (
-                  <Paper key={index}>
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`preview-${index}`}
-                      width="100%"
-                      style={{ maxHeight: "400px", objectFit: "cover" }} // Adjust maxHeight based on your layout
-                    />
-                  </Paper>
-                ))}
-                {/* NextIcon={<ArrowForward />}
-                PrevIcon={<ArrowBack />} */}
-              </Carousel>
-            )}
-            <CardContent>
-              <Stack spacing={2}>
-                {formik.values.availability && (
-                  <Link
-                    style={{ display: "inline-flex", justifyContent: "right" }}
+          {/* Image Preview Section */}
+          {(formik.values.image || formValues.image) && (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+              {/* Existing images from server */}
+              {typeof formValues.image === 'string' && (
+                <Paper sx={{ position: 'relative', width: 200, height: 200 }}>
+                  <img
+                    src={`${BASE_URL}uploads/${formValues.image}`}
+                    alt="Existing Unit Image"
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover' 
+                    }}
+                  />
+                  <Button
+                    color="error"
+                    variant="contained"
+                    size="small"
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 5, 
+                      right: 5,
+                      minWidth: 'auto',
+                      padding: '4px 8px'
+                    }}
+                    onClick={() => {
+                      setFormValues(prev => ({ ...prev, image: null }));
+                      formik.setFieldValue("image", []);
+                    }}
                   >
-                    View Occupants
-                  </Link>
-                )}
-                <InputCom
-                  id="unit_number"
-                  label="Unit/Flat Number"
-                  type="text"
-                  value={formik.values.unit_number}
-                  onChange={formik.handleChange}
-                />
+                    X
+                  </Button>
+                </Paper>
+              )}
 
-                {/* Availability Switch */}
-                <FormControlLabel
-                  sx={{ display: "inline-flex", justifyContent: "right" }}
-                  control={
-                    <Switch
-                      checked={formik.values.avaliability}
-                      onChange={(e) =>
-                        formik.setFieldValue("avaliability", e.target.checked)
-                      }
-                      name="avaliability"
-                    />
-                  }
-                  label="Availability"
-                />
+              {/* Newly uploaded files */}
+              {formik.values.image && formik.values.image.map((file, index) => (
+                <Paper key={index} sx={{ position: 'relative', width: 200, height: 200 }}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`preview-${index}`}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover' 
+                    }}
+                  />
+                  <Button
+                    color="error"
+                    variant="contained"
+                    size="small"
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 5, 
+                      right: 5,
+                      minWidth: 'auto',
+                      padding: '4px 8px'
+                    }}
+                    onClick={() => {
+                      const newFiles = formik.values.image.filter((_, i) => i !== index);
+                      formik.setFieldValue("image", newFiles);
+                    }}
+                  >
+                    X
+                  </Button>
+                </Paper>
+              ))}
+            </Box>
+          )}
 
-                {/* Property Type */}
-                <SelectCom
-                  label="Property Type"
-                  options={[
-                    { value: "tenancy", text: "Tenancy" },
-                    { value: "commercial", text: "Commercial" },
-                  ]}
-                  value={formik.values.type}
-                  onChange={(e) => formik.setFieldValue("type", e.target.value)}
-                />
+          {/* Input Fields */}
+          <InputCom
+            id="name"
+            label="Branch Name"
+            type="text"
+            value={formValues.name}
+            onChange={(e) =>
+              setFormValues({
+                ...formValues,
+                name: e.target.value,
+              })
+            }
+          />
 
-                <div
-                  {...getRootProps()}
-                  style={{
-                    border: "2px dashed #cccccc",
-                    padding: "20px",
-                    textAlign: "center",
-                  }}
-                >
-                  <input {...getInputProps({ id: "image", name: "image" })} />
-                  {isDragActive ? (
-                    <p>Drop the files here...</p>
-                  ) : (
-                    <p>Drag & drop some files here, or click to select files</p>
-                  )}
-                </div>
-              </Stack>
-            </CardContent>
-            <CardActions
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<Save />}
-                onClick={formik.handleSubmit}
-              >
-                Save
-              </Button>
-            </CardActions>
-          </Card>
-        </ModalBox>
-      )}
+          <InputCom
+            id="address"
+            label="Branch Address"
+            type="text"
+            value={formValues.address}
+            onChange={(e) =>
+              setFormValues({
+                ...formValues,
+                address: e.target.value,
+              })
+            }
+          />
+        </Stack>
+      </CardContent>
+
+      {/* Card Actions with Save Button */}
+      <CardActions sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Save />}
+          onClick={formik.handleSubmit}
+          fullWidth
+        >
+          Save Changes
+        </Button>
+      </CardActions>
+    </Card>
+  </ModalBox>
+)}
     </Box>
   );
 }
@@ -342,7 +378,8 @@ function Units({ gridnum, pagination, property_id }) {
 Units.propTypes = {
   gridnum: PropTypes.number,
   pagination: PropTypes.bool,
-  property_id: PropTypes.number,
+  id: PropTypes.number,
+  companydetails: PropTypes.object, 
 };
 
 export default Units;

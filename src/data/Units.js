@@ -1,23 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { ENDPOINTS } from "./Endpoints";
+import { useQuery } from "@tanstack/react-query"
 import makeAPIRequest from ".";
+import { ENDPOINTS } from "./Endpoints";
 
-const useUnits = ({ property_id }) => {
+const useUnits = ({ companydetails = {} }) => {
+  // console.log("test", companydetails.org_id);
+  
   return useQuery({
-    queryKey: ["Units", property_id],
+    queryKey: ["Units"],
     queryFn: async () => {
-      if (!property_id) return;
-
       const response = await makeAPIRequest.get(
-        `${ENDPOINTS.getunit}?property_id=${property_id}`
+        `${ENDPOINTS.getunit}?org_id=${companydetails.org_id}&branch_id=${companydetails.branch_id}`
       );
       if (!response.data) {
         throw new Error("Network response was not ok");
       }
-
       return response.data;
     },
-    enabled: !!property_id,
+    // Only run the query if org_id and branch_id are provided
+    // enabled: ÷Boolean(companydetails.org_id && companydetails.branch_id)
   });
 };
-export default useUnits;
+
+export default useUnits

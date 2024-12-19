@@ -2,7 +2,8 @@ export const TOKEN_KEY = "247_token";
 export const TOKEN_KEY2 = "247_token_user";
 
 export const BASE_URL =
-import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.com/api/";
+// import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.com/api/";
+import.meta.env.VITE_API_BASE || "https://lenient-growing-colt.ngrok-free.app/api/";
   // import.meta.env.VITE_API_BASE || "http://localhost:5000/api/";
 
   export const BASE_URL2 =
@@ -31,8 +32,9 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
 
     //medical
     update_medical: "user/update/medical-profile",
-    add_medical: "medical/record/create",
+    addmedical: "medical/record/create",
     update_medial2: "medical/record/update", 
+    getmedical: "medical/record/get",
 
 
 
@@ -60,8 +62,8 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     terminate: "ceo/company/employee/terminate",
     updateemployee: "ceo/company/employee/update",
 
-    addmedical: "medical/record/create",
-
+   
+  
     addcrime: "user/crime-report/create",
     crime: "user/crime-report/view",
     update_crime: "user/crime-report/update",
@@ -69,5 +71,9 @@ import.meta.env.VITE_API_BASE || "https://orgserviceapi.247securityandforensic.c
     //Force
     getforce:"admin-panel/admin/organization/force/view",
     createforce: "admin-panel/admin/organization/force/create",
+
+    //Organization Unit
+    createunit: "unit",
+    getunit: "unit"
     
   };
